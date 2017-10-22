@@ -15,7 +15,6 @@ class UserProfile(models.Model):
         ('M', 'Male'),
         ('F', 'Female'),
     )
-    user_id = models.AutoField(unique=True, primary_key=True)
     user = models.OneToOneField(User)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     date_of_birth = models.DateField(blank=False)
@@ -25,7 +24,7 @@ class UserProfile(models.Model):
     tagline = models.CharField(max_length=255)
     university = models.CharField(max_length=255)
     company = models.CharField(max_length=255)
-    profile_pic = models.URLField(null=True)
+    profile_pic = models.URLField(blank=False)
     interests = models.ManyToManyField(Topic, verbose_name="list of interests", related_name="interested_users")
 
     def __unicode__(self):
@@ -33,7 +32,7 @@ class UserProfile(models.Model):
 
 
 class Message(models.Model):
-    message_id = models.AutoField()
+    message_id = models.AutoField(primary_key=True)
     sender = models.ForeignKey(UserProfile, related_name="sent_messages")
     receiver = models.ForeignKey(UserProfile, related_name="received_messages")
     message_text = models.TextField(blank=False)
@@ -64,14 +63,18 @@ class Tag(models.Model):
     question = models.ForeignKey(Question, related_name="tags")
     asked_by = models.ForeignKey(UserProfile, related_name="asked_tags")
     asked_to = models.ForeignKey(UserProfile, related_name="received_tags")
+    # 0:not seen/ignored, 1: followed, 2: answered
     response = models.SmallIntegerField(default=0, blank=False)
 
     def __unicode__(self):
         return self.asked_by, " -> ", self.asked_to
 
+    class Meta:
+        unique_together = (('question', 'asked_to', 'asked_by'),)
+
 
 class Answer(models.Model):
-    answer_id = models.AutoField()
+    answer_id = models.AutoField(primary_key=True)
     question = models.ForeignKey(Question, related_name="answers")
     answer_by = models.ForeignKey(UserProfile, related_name="user_answers")
     answer_text = models.TextField(blank=False)
@@ -87,7 +90,7 @@ class Answer(models.Model):
 
 
 class Comment(models.Model):
-    comment_id = models.AutoField()
+    comment_id = models.AutoField(primary_key=True)
     answer = models.ForeignKey(Answer, related_name="comments")
     question = models.ForeignKey(Question, related_name="comments")
     comment_text = models.TextField(blank=False)
@@ -112,12 +115,28 @@ class Vote(models.Model):
     def __unicode__(self):
         return "Vote by ", self.vote_by, self.vote_type
 
+    class Meta:
+        unique_together = (('question', 'answer', 'comment'),)
+
 
 class Follow(models.Model):
     follower = models.ForeignKey(UserProfile, related_name="user_follows")
-    followed_user = models.ForeignKey(UserProfile, related_name="followed_by", default=-1)
-    question = models.ForeignKey(Question, default=-1)
-    topic = models.ForeignKey(Topic, default=-1)
+    followed_id = models.IntegerField(blank=False)
     timestamp = models.DateTimeField(auto_now_add=True)
     # 0: user, 1: question, 2: topic
     flag = models.SmallIntegerField(blank=False, default=0)
+
+
+class Notification(models.Model):
+    notification_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(UserProfile, related_name="notifications")
+    notification_text = models.TextField(blank=False)
+    url = models.URLField(blank=False)
+    is_read = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.notification_text
+
+    class Meta:
+        unique_together = (('notification_id', 'user'),)
