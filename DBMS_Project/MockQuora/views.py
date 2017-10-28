@@ -9,8 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 
 def index(request):
-    return HttpResponse("yayy!!")
-
+    return render(request, 'MockQuora/index.html', {})
 
 def user_login(request):
     error_msg = ""
