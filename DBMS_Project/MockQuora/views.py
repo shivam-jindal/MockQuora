@@ -66,3 +66,4 @@ def register(request):
 
 @login_required
 def feed(request):
+    pass
