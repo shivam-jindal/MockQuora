@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 def index(request):
     return render(request, 'MockQuora/index.html', {})
 
+
 def user_login(request):
     error_msg = ""
     if request.method == "POST":
@@ -25,21 +26,19 @@ def user_login(request):
                     login(request, user)
                     return HttpResponseRedirect('/feed/')
                 else:
-                    return HttpResponse("your account is disabled.")
-
+                    error_msg = "Your account is disabled!"
             else:
                 error_msg = "Invalid Login Details."
                 print error_msg
-
         else:
             error_msg = form.errors
 
     form = LoginForm()
     context = {
-        'errormsg': error_msg,
+        'message': error_msg,
         'form': form
     }
-    return render(request, 'quora/login.html', context)
+    return render(request, 'MockQuora/login.html', context)
 
 
 def register(request):
@@ -50,17 +49,17 @@ def register(request):
             user_profile = form.save(commit=False)
             user_profile.add(*form.cleaned_data["interests"])
             user_profile.save()
-            return HttpResponseRedirect('/feed/')
+            return HttpResponseRedirect('/login/')
         else:
             error_msg = form.errors
 
     form = RegisterForm()
     context = {
-        'errormsg': error_msg,
+        'message': error_msg,
         'form': form
     }
 
-    return render(request, 'quora/register.html', context)
+    return render(request, 'MockQuora/register.html', context)
 
 
 @login_required
