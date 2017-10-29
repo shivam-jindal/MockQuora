@@ -7,6 +7,9 @@ from . import views
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
     url(r'^login/$', views.user_login, name='login'),
-    url(r'^register/$', views.register, name='register'),
+    url(r'^add_details/$', views.register_profile, name='add_details'),
+    url(r'^register/$', views.register_user, name='register'),
+    url(r'^feed/$', views.feed, name='feed'),
+    url(r'^question/(?P<question_id>\d+)/$', views.question_page, name='question_page'),
 )
 
