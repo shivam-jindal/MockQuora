@@ -16,9 +16,11 @@ class RegisterProfileForm(forms.ModelForm):
 
 
 class RegisterUserForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:
         model = User
+        fields = ('first_name', 'last_name', 'username', 'email', 'password')
 
 
 class AnswerForm(forms.Form):
@@ -27,3 +29,10 @@ class AnswerForm(forms.Form):
 
 class CommentForm(forms.Form):
     comment_text = forms.Textarea()
+
+
+class QuestionForm(forms.ModelForm):
+
+    class Meta:
+        model = Question
+        fields = ('question_text', 'is_anonymous', 'topic')

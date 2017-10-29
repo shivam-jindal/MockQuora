@@ -25,7 +25,7 @@ def user_login(request):
             if user:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponseRedirect('/feed/')
+                    return HttpResponseRedirect('feed/')
                 else:
                     error_msg = "Your account is disabled!"
             else:
@@ -53,7 +53,7 @@ def register_user(request):
         else:
             error_msg = form.errors
 
-    form = RegisterProfileForm()
+    form = RegisterUserForm()
     context = {
         'message': error_msg,
         'form': form
@@ -124,6 +124,35 @@ def feed(request):
 
 
 @login_required
+def post_question(request):
+    try:
+        message = ""
+        user = UserProfile.objects.get(user=request.user)
+        form = QuestionForm()
+
+        if request.method == "POST":
+            form = QuestionForm(request.POST)
+            if form.is_valid():
+                question = form.save(commit=False)
+                question.posted_by = user
+                question.save()
+                message = "success"
+            else:
+                message = form.errors
+
+        context = {
+            'form': form,
+            'message': message,
+        }
+
+        return render(request, 'MockQuora/post_question.html', context)
+
+    except Exception as e:
+        print "[Exception]: ", e
+        raise Http404
+
+
+@login_required
 def question_page(request, question_id):
     try:
         message = ""
@@ -185,3 +214,33 @@ def answer_page(request, question_id, answer_id):
     except Exception as e:
         print "[Exception]: ", e
         raise Http404
+
+
+@login_required
+def profile(request, user_id):
+    try:
+        user = UserProfile(pk=user_id)
+        bookmarks = user.bookmarks.all()
+        follower_count = Follow.objects.filter(Q(flag=0, followed_id=user.pk)).count()
+        question_count = Question.objects.filter(posted_by=user, is_anonymous=False).count()
+        answers = Answer.objects.filter(answer_by=user)
+        answer_count = answers.count()
+        upvotes_count = 0
+        for answer in answers:
+            upvotes_count += Vote.objects.filter(answer=answer, comment=-1).count()
+
+        context = {
+            'user': user,
+            'bookmarks': bookmarks,
+            'follower_count': follower_count,
+            'question_count': question_count,
+            'answer_count': answer_count,
+            'upvotes_count': upvotes_count
+        }
+
+        return render(request, "MockQuora/profile.html", context)
+
+    except Exception as e:
+        print "[Exception]: ", e
+        raise Http404
+
