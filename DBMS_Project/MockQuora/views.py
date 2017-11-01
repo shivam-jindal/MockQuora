@@ -48,8 +48,11 @@ def register_user(request):
         form = RegisterUserForm(request.POST)
         if form.is_valid():
             user = form.save()
+            user.set_password(user.password)
             user.save()
-            return HttpResponseRedirect('/add_details/')
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request, user)
+            return HttpResponseRedirect('/MockQuora/add_details/')
         else:
             error_msg = form.errors
 
@@ -69,10 +72,11 @@ def add_profile_details(request):
         form = RegisterProfileForm(request.POST)
         if form.is_valid():
             user_profile = form.save(commit=False)
-            user_profile.add(*form.cleaned_data["interests"])
             user_profile.user = request.user
             user_profile.save()
-            return HttpResponseRedirect('/feed/')
+            user_profile.add(*form.cleaned_data["interests"])
+            user_profile.save()
+            return HttpResponseRedirect('/MockQuora/feed/')
         else:
             error_msg = form.errors
 
@@ -96,7 +100,7 @@ def feed(request):
     followed_topics = Topic.objects.filter(topic_id__in=followed_topics_ids)
     questions = Question.objects.filter(Q(topic__in=user.interests.all())
                                         | Q(topic__in=followed_topics)).order_by('timestamp')
-    questions = questions.filter(~Q(posted_by=user))
+    #questions = questions.filter(~Q(posted_by=user))
 
     answered_questions = []
     unanswered_questions = []
@@ -120,6 +124,8 @@ def feed(request):
         'trending_topics': trending_topics
     }
 
+    print context
+
     return render(request, 'MockQuora/feed.html', context)
 
 
@@ -136,7 +142,8 @@ def post_question(request):
                 question = form.save(commit=False)
                 question.posted_by = user
                 question.save()
-                message = "success"
+                print question.pk
+                return HttpResponseRedirect('/MockQuora/question/' + str(question.question_id))
             else:
                 message = form.errors
 
