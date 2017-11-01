@@ -8,9 +8,31 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput())
 
 
-class RegisterForm(forms.ModelForm):
+class RegisterProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
+        fields = ('gender', 'date_of_birth', 'city', 'country', 'about_me', 'tagline', 'university', 'company', 'profile_pic', 'interests')
 
 
+class RegisterUserForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput())
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'username', 'email', 'password')
+
+
+class AnswerForm(forms.Form):
+    answer_text = forms.Textarea()
+
+
+class CommentForm(forms.Form):
+    comment_text = forms.Textarea()
+
+
+class QuestionForm(forms.ModelForm):
+
+    class Meta:
+        model = Question
+        fields = ('question_text', 'is_anonymous', 'topic')

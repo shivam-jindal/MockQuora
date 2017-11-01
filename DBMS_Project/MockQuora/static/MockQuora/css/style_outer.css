@@ -1,0 +1,296 @@
+/*
+Template: Knowledge Q&A Dashboard Template
+Author: ScriptsBundle
+Version: 1.0
+Designed and Development by: ScriptsBundle
+*/
+
+
+/*-- General --*/
+
+html, body {
+	height: 100%;
+	width: 100%;
+}
+body {
+	font-family: 'Source Sans Pro', sans-serif;
+	color: #777;
+	font-size: 16px;
+	line-height: 1.7em;
+	font-weight: 400;
+	overflow-x: hidden;
+	-webkit-text-size-adjust: 100%;
+	-webkit-overflow-scrolling: touch;
+	-webkit-font-smoothing: antialiased !important;
+	background: rgba(0, 0, 0, 0) url("http://templates.scriptsbundle.com/knowledge/images/bg.jpg") repeat scroll 0 0;
+}
+a {
+	color: #be161e;
+	-webkit-transition: all .25s ease-in-out;
+	-moz-transition: all .25s ease-in-out;
+	-ms-transition: all .25s ease-in-out;
+	-o-transition: all .25s ease-in-out;
+	transition: all .25s ease-in-out;
+	cursor: pointer;
+}
+a:hover, a:focus {
+	text-decoration: none;
+	o-transition: all 0.3s ease-out;
+	-ms-transition: all 0.3s ease-out;
+	-moz-transition: all 0.3s ease-out;
+	-webkit-transition: all 0.3s ease-out;
+	transition: all 0.3s ease-out;
+	color: #be161e ;
+}
+img {
+	max-width: 100%;
+}
+a, b, div, ul, li {
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	-webkit-tap-highlight-color: transparent;
+	-moz-outline-: none;
+}
+ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+video, object {
+	min-height: 100%;
+	min-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+	position: relative;
+	font-family: 'Merriweather', serif;
+	font-weight: normal;
+	margin: 0px;
+	background: none;
+	line-height: 1.6em;
+}
+h1 {
+	font-size: 36px;
+}
+h2 {
+	font-size: 24px;
+}
+h3 {
+	font-size: 20px;
+}
+h4 {
+	font-size: 16px;
+}
+h5 {
+	font-size: 14px;
+	line-height: 1.6;
+}
+h6 {
+	font-size: 12px;
+}
+p {
+	line-height: 1.6em;
+	font-size: 16px;
+}
+.btn {
+	font-size: 14px;
+	letter-spacing: 1px;
+	padding: 21px 25px;
+	border-radius: 1px;
+	-webkit-transition: all .25s ease-in-out;
+	-moz-transition: all .25s ease-in-out;
+	-ms-transition: all .25s ease-in-out;
+	-o-transition: all .25s ease-in-out;
+	transition: all .25s ease-in-out;
+	font-family: 'Merriweather', serif;
+}
+.nopadding {
+	padding:0;	
+}
+.margin {
+	padding-top: 35px !important;
+}
+/*---- Title section ----*/
+
+.displaTable {
+    display: table;
+    width: 100%;
+    height: 100%;
+}
+.displayTableCell {
+    display: table-cell;
+    vertical-align: middle;
+}
+.preview-title h1{
+    text-transform: uppercase;
+}
+.preview-title h1 span{
+    color: #be161e;
+}
+.preview-title > .link {
+  margin-left: -15px;
+  margin-top: 30px;
+}
+  .preview-title > .link a{
+    border: 1px solid #fff;
+    border-radius: 3px;
+    padding: 10px 35px;
+    text-transform: uppercase;
+    color: #fff;
+    margin-left: 15px;
+    -webkit-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+	letter-spacing:2px;
+  }
+  .preview-title > .link a.buy-now {
+    background-color: #be161e;
+    border-color: #be161e;
+  }
+.preview-title > .link a:hover {
+    background-color: #be161e;
+    border-color: #be161e;
+}
+
+/*---- Preview Heading ----*/
+
+.preview-header {
+	
+	
+	
+	 background: rgba(0, 0, 0, 0) url("../images/banner.jpg") no-repeat fixed center center / cover;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+    color: #fff;
+    text-align: center;
+    position: relative;
+	padding:350px 0;
+}
+.preview-header:before {
+    background:  rgba(0, 0, 0, 0.8);
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    content: "";
+}
+
+/*---- Single Preview ----*/
+
+.single-preview {
+    text-align: center;
+    margin-bottom: 30px;
+		padding:30px;
+
+}
+.single-preview a {
+    text-transform: uppercase;
+    color: #383838;
+    -webkit-transition: all 0.3s ease 0s;
+    -o-transition: all 0.3s ease 0s;
+    transition: all 0.3s ease 0s;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 3px;
+}
+.single-preview a:hover {
+    color: #be161e;
+}
+.single-demo {
+    margin-bottom: 30px;
+    background-size: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+/*---- Preview Footer ----*/
+
+.preview-footer {
+  background-color: #08213d;
+  color: #fff;
+  padding: 30px 0px;
+}
+.preview-footer p {
+  margin-bottom: 0px;
+  line-height: 30px;
+}
+.preview-footer a {
+  color: #be161e;
+  -webkit-transition: all 0.3s ease 0s;
+  -o-transition: all 0.3s ease 0s;
+  transition: all 0.3s ease 0s;
+}
+
+.preview-footer p > a:hover {
+  color: #fff;
+}
+
+/*---- Social Links ----*/
+
+.social-links {
+  text-align: right;
+}
+.social-links a {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #fff;
+  text-align: center;
+  color:#fff;
+  line-height: 30px;
+  border-radius: 3px;
+  margin-left: 5px;
+  -webkit-transition: all 0.3s ease 0s;
+  -o-transition: all 0.3s ease 0s;
+  transition: all 0.3s ease 0s;
+}
+.social-links a:hover {
+  background-color: #be161e;
+  color: #fff;
+}
+
+
+.left-section {
+	background-color:#FFF;
+	position:relative;
+	overflow:hidden;
+	padding:70px 0 0 0;
+	text-align:center;	
+}
+.right-section {
+	background-color:#242424;
+	position:relative;	
+	overflow:hidden;
+	padding:90px 0;
+	text-align:center;
+	color:#FFF;
+}
+.right-section a {
+	color:#FFF;	
+}
+#demo-section h2 {
+	text-transform:uppercase;
+	color:#383838;
+	margin-bottom: 25px;
+}
+/*----- Responsive CSS ------*/
+
+@media (min-width: 320px) and (max-width: 767px) {
+
+.preview-title h1 {
+	font-size:26px !important;
+}
+.preview-title > .link a {
+	margin-left:0 !important;
+	letter-spacing:0;	
+}
+.preview-header {
+    color: #fff;
+    padding: 90px 0;
+}
+.single-preview {
+    margin-bottom: 30px;
+	text-align:center;
+}
+}

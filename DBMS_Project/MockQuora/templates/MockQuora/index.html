@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html lang="en">
+
+<head>
+	{% block title %}
+	{% endblock %}
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="ScriptsBundle">
+    <title>Knowledge Q&A Dashboard Template</title>
+    <!-- =-=-=-=-=-=-= Favicons Icon =-=-=-=-=-=-= -->
+    <link rel="icon" href="{{STATIC_URL}}MockQuora/images/favicon.ico" type="image/x-icon" />
+    <!-- =-=-=-=-=-=-= Mobile Specific =-=-=-=-=-=-= -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!-- =-=-=-=-=-=-= Bootstrap CSS Style =-=-=-=-=-=-= -->
+    <link rel="stylesheet" href="{{STATIC_URL}}MockQuora/css/bootstrap.css">
+    <!-- =-=-=-=-=-=-= Template CSS Style =-=-=-=-=-=-= -->
+    <link rel="stylesheet" href="{{STATIC_URL}}MockQuora/css/style_outer.css">
+        <!-- =-=-=-=-=-=-= Font Awesome =-=-=-=-=-=-= -->
+    <link rel="stylesheet" href="{{STATIC_URL}}MockQuora/css/font-awesome.css" type="text/css">
+    <!-- =-=-=-=-=-=-= Google Fonts =-=-=-=-=-=-= -->
+    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic,900italic,900,300,300italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css">
+    <!-- JavaScripts -->
+    <script src="http://templates.scriptsbundle.com/knowledge/js/modernizr.js"></script>
+</head>
+
+{% block content %}
+<body class="preview">
+    <header class="preview-header">
+        <div class="displaTable">
+          <div class="displayTableCell">
+            <div class="container">
+              <div class="row">
+                <div class="col-xs-12">
+                  <div class="preview-title">
+                    <h1><span>Knowledge</span>  -  Question & Answer <br> Dashboard Template</h1>
+                   
+                    <div class="link">
+                      <a href="/MockQuora/login" class="buy-now">Login</a>
+                      <a href="/MockQuora/register" class="live-demo">Sign up</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </header>
+
+    <footer class="preview-footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-7 col-xs-12">
+            <div class="copyright">
+              <p>Copyright &copy; Knowledge Q&A Dashboard Template By <a target="_blank" href="http://themeforest.net/user/scriptsbundle">ScriptsBundle</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    {% block script %}
+    <script src="{{STATIC_URL}}MockQuora/js/jquery.min.js"></script>
+    <script src="{{STATIC_URL}}MockQuora/js/bootstrap.min.js"></script>  
+    <script src="{{STATIC_URL}}MockQuora/js/main.js"></script>
+    {% endblock %}
+
+</body>
+{% endblock %}
+</html>
