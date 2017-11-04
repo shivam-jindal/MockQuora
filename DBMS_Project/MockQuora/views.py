@@ -25,7 +25,7 @@ def user_login(request):
             if user:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponseRedirect('feed/')
+                    return HttpResponseRedirect('/MockQuora/feed/')
                 else:
                     error_msg = "Your account is disabled!"
             else:
@@ -100,8 +100,8 @@ def feed(request):
     followed_topics_ids = [x.followed_id for x in followings]
     followed_topics = Topic.objects.filter(topic_id__in=followed_topics_ids)
     questions = Question.objects.filter(Q(topic__in=user.interests.all())
-                                        | Q(topic__in=followed_topics)).order_by('timestamp')
-    # questions = questions.filter(~Q(posted_by=user))
+                                       | Q(topic__in=followed_topics)).order_by('timestamp')
+    #questions = questions.filter(~Q(posted_by=user))
 
     answered_questions = []
     unanswered_questions = []
@@ -129,8 +129,10 @@ def feed(request):
             final_popular_users.append((usr, False))
 
     popular_questions = Question.objects.annotate(viewer_count=Count('viewers')).order_by('-viewer_count')
-    trending_topics = [ques.topic for ques in popular_questions]
+    trending_topics = []
 
+    for ques in popular_questions:
+        trending_topics.extend(ques.topic.all())
     final_trending_topics = []
     for topic in set(trending_topics):
         if Follow.objects.filter(follower=user, followed_id=topic.pk, flag=2).count() == 1:
