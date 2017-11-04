@@ -219,20 +219,23 @@ def answer_page(request, question_id, answer_id):
 @login_required
 def profile(request, user_id):
     try:
-        user = UserProfile(pk=user_id)
+        user = UserProfile.objects.get(pk=user_id)
         bookmarks = user.bookmarks.all()
-        follower_count = Follow.objects.filter(Q(flag=0, followed_id=user.pk)).count()
+        follower = Follow.objects.filter(Q(flag=0, followed_id=user.pk))
+        followers = [(i.follower, i.timestamp) for i in follower]
+        following = Follow.objects.filter(flag=0, follower=user)
+        followings = [(UserProfile.objects.get(pk=i.followed_id), i.timestamp) for i in following]
         question_count = Question.objects.filter(posted_by=user, is_anonymous=False).count()
         answers = Answer.objects.filter(answer_by=user)
         answer_count = answers.count()
         upvotes_count = 0
         for answer in answers:
             upvotes_count += Vote.objects.filter(answer=answer, comment=-1).count()
-
         context = {
             'user': user,
             'bookmarks': bookmarks,
-            'follower_count': follower_count,
+            'follower': followers,
+            'following': followings,
             'question_count': question_count,
             'answer_count': answer_count,
             'upvotes_count': upvotes_count
