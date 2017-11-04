@@ -67,7 +67,7 @@ class Tag(models.Model):
     response = models.SmallIntegerField(default=0, blank=False)
 
     def __unicode__(self):
-        return self.asked_by, " -> ", self.asked_to
+        return "{0}, {1}, {2}".format(self.asked_by, " -> ", self.asked_to)
 
     class Meta:
         unique_together = (('question', 'asked_to', 'asked_by'),)
@@ -83,7 +83,7 @@ class Answer(models.Model):
     bookmarks = models.ManyToManyField(UserProfile, related_name="bookmarks")
 
     def __unicode__(self):
-        return "Answer by ", self.answer_by
+        return "{0}, {1}".format("Answer by ", self.answer_by)
 
     class Meta:
         unique_together = (('answer_id', 'question'),)
@@ -113,7 +113,7 @@ class Vote(models.Model):
     vote_type = models.BooleanField(blank=False, default=True)
 
     def __unicode__(self):
-        return "Vote by ", self.vote_by, self.vote_type
+        return "{0}, {1}, {2}".format("Vote by ", self.vote_by, self.vote_type)
 
     class Meta:
         unique_together = (('question', 'answer', 'comment'),)
