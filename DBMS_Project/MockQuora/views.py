@@ -91,17 +91,33 @@ def add_profile_details(request):
 
 @login_required
 def feed(request):
-    print request.GET
-    if request.method == "POST":
-        pass
-
+    query = request.GET.get('search_query', None)
     user = UserProfile.objects.get(user=request.user)
-    followings = Follow.objects.filter(follower=user, flag=2)
-    followed_topics_ids = [x.followed_id for x in followings]
-    followed_topics = Topic.objects.filter(topic_id__in=followed_topics_ids)
-    questions = Question.objects.filter(Q(topic__in=user.interests.all())
-                                       | Q(topic__in=followed_topics)).order_by('timestamp')
-    #questions = questions.filter(~Q(posted_by=user))
+
+    if query is not None:
+        questions = Question.objects.filter(Q(question_text__contains=query)).order_by('-timestamp')
+        popular_users = UserProfile.objects.filter(
+            Q(user__username__contains=query) | Q(user__first_name__contains=query) | Q(
+                user__last_name__contains=query))
+        trending_topics = Topic.objects.filter(name__contains=query)
+
+    else:
+        followings = Follow.objects.filter(follower=user, flag=2)
+        followed_topics_ids = [x.followed_id for x in followings]
+        followed_topics = Topic.objects.filter(topic_id__in=followed_topics_ids)
+        questions = Question.objects.filter(Q(topic__in=user.interests.all())
+                                            | Q(topic__in=followed_topics)).order_by('-timestamp')
+        # questions = questions.filter(~Q(posted_by=user))
+
+        popular_answers = Answer.objects.annotate(viewer_count=Count('viewers')).order_by('-viewer_count')
+        # popular_answers = popular_answers.filter(~Q(answer_by=user))
+        popular_users = [ans.answer_by for ans in popular_answers]
+
+        popular_questions = Question.objects.annotate(viewer_count=Count('viewers')).order_by('-viewer_count')
+        trending_topics = []
+
+        for ques in popular_questions:
+            trending_topics.extend(ques.topic.all())
 
     answered_questions = []
     unanswered_questions = []
@@ -116,23 +132,14 @@ def feed(request):
             most_popular_answer = question.answers.annotate(viewer_count=Count('viewers')).order_by('-viewer_count')[:1]
             answered_questions.append((question, most_popular_answer[0], following_status))
 
-    popular_answers = Answer.objects.annotate(viewer_count=Count('viewers')).order_by('-viewer_count')
-    #popular_answers = popular_answers.filter(~Q(answer_by=user))
-    popular_users = [ans.answer_by for ans in popular_answers]
-
     final_popular_users = []
-    #for usr in set(popular_users):
+    # for usr in set(popular_users):
     for usr in popular_users:
         if Follow.objects.filter(follower=user, followed_id=usr.pk, flag=0).count() == 1:
             final_popular_users.append((usr, True))
         else:
             final_popular_users.append((usr, False))
 
-    popular_questions = Question.objects.annotate(viewer_count=Count('viewers')).order_by('-viewer_count')
-    trending_topics = []
-
-    for ques in popular_questions:
-        trending_topics.extend(ques.topic.all())
     final_trending_topics = []
     for topic in set(trending_topics):
         if Follow.objects.filter(follower=user, followed_id=topic.pk, flag=2).count() == 1:
@@ -286,3 +293,13 @@ def profile(request, user_id):
     except Exception as e:
         print "[Exception]: ", e
         raise Http404
+
+
+@login_required
+def message(request):
+    pass
+
+
+@login_required
+def add_message(request, user_id):
+    pass
