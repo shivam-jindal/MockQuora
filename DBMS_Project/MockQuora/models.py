@@ -53,7 +53,7 @@ class Question(models.Model):
     is_anonymous = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
     viewers = models.ManyToManyField(UserProfile, related_name="viewed_questions")
-    topic = models.ForeignKey(Topic, related_name="questions_on_topic")
+    topic = models.ManyToManyField(Topic, related_name="questions_on_topic", null=True, blank=True)
 
     def __unicode__(self):
         return self.question_text
@@ -81,6 +81,7 @@ class Answer(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     viewers = models.ManyToManyField(UserProfile, related_name="viewed_answers")
     bookmarks = models.ManyToManyField(UserProfile, related_name="bookmarks")
+    image = models.ImageField(upload_to="MockQuora/static/MockQuora/images", blank=True, null=True)
 
     def __unicode__(self):
         return "{0}, {1}".format("Answer by ", self.answer_by)
