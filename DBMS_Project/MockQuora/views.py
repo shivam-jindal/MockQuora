@@ -74,7 +74,7 @@ def add_profile_details(request):
             user_profile = form.save(commit=False)
             user_profile.user = request.user
             user_profile.save()
-            user_profile.add(*form.cleaned_data["interests"])
+            user_profile.interests.add(*form.cleaned_data["interests"])
             user_profile.save()
             return HttpResponseRedirect('/MockQuora/feed/')
         else:
@@ -299,10 +299,75 @@ def profile(request, user_id):
 
 
 @login_required
-def message(request):
-    pass
+def chat(request):
+    try:
+        user = UserProfile.objects.get(user=request.user)
+        recent_message = Message.objects.filter(Q(sender=user) | Q(receiver=user)).order_by('-timestamp')[:1]
+
+        if len(recent_message) == 0:
+            second_id = 0
+        else:
+            if recent_message[0].sender == user:
+                second_id = recent_message[0].receiver.pk
+            else:
+                second_id = recent_message[0].sender.pk
+        return HttpResponseRedirect('/MockQuora/message/' + str(second_id))
+
+    except Exception as e:
+        print "[Exception]: ", e
+        raise Http404
 
 
 @login_required
-def add_message(request, user_id):
-    pass
+def message(request, user_id):
+    try:
+        message = ""
+        if int(user_id) == 0:
+            message = "No chat history found!"
+            context = {
+                'message': message
+            }
+        else:
+            user = UserProfile.objects.get(user=request.user)
+            second_user = UserProfile.objects.get(pk=user_id)
+            if request.method == 'POST':
+                message_text = request.POST.get('message_text', None)
+                if message_text is not None:
+                    msg = Message(sender=user, receiver=second_user, message_text=message_text)
+                    msg.save()
+                    print "message added"
+
+            messages = Message.objects.filter(
+                Q(sender=user, receiver=second_user) | Q(sender=second_user, receiver=user)).order_by('timestamp')
+            all_messages = Message.objects.filter(Q(sender=user) | Q(receiver=user)).order_by('-timestamp')
+            connections = set()
+            for msg in all_messages:
+                if msg.sender == user:
+                    connections.add(msg.receiver)
+                else:
+                    connections.add(msg.sender)
+
+            connections = [i for i in connections]
+
+            context = {
+                'user': user,
+                'chat_user': second_user,
+                'messages': messages,
+                'connections': connections,
+                'message': message
+            }
+            m = context['messages']
+            for i in m:
+                print i.is_seen
+
+            not_seen_messages = Message.objects.filter(receiver=user, sender=second_user, is_seen=False)
+            for msg in not_seen_messages:
+                msg.is_seen = True
+                msg.save()
+            m = context['messages']
+            for i in m:
+                print i.is_seen
+        return render(request, "MockQuora/chat.html", context)
+    except Exception as e:
+        print "[Exception]: ", e
+        raise Http404

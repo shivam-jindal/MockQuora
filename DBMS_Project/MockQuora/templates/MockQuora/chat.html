@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html lang="en">
+
+<head>
+    <title>
+    {% block title %}
+    Message
+    {% endblock %}
+    </title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="author" content="ScriptsBundle">
+    <title>Knowledge Q&A Dashboard Template</title>
+    <!-- =-=-=-=-=-=-= Favicons Icon =-=-=-=-=-=-= -->
+    <link rel="icon" href="{{STATIC_URL}}MockQuora/images/favicon.ico" type="image/x-icon"/>
+    <!-- =-=-=-=-=-=-= Mobile Specific =-=-=-=-=-=-= -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <!-- =-=-=-=-=-=-= Bootstrap CSS Style =-=-=-=-=-=-= -->
+    <link rel="stylesheet" href="{{STATIC_URL}}MockQuora/css/bootstrap.css">
+    <!-- =-=-=-=-=-=-= Template CSS Style =-=-=-=-=-=-= -->
+    <link rel="stylesheet" href="{{STATIC_URL}}MockQuora/css/style.css">
+    <!-- =-=-=-=-=-=-= Font Awesome =-=-=-=-=-=-= -->
+    <link rel="stylesheet" href="{{STATIC_URL}}MockQuora/css/font-awesome.css">
+    <!-- =-=-=-=-=-=-= Et Line Fonts =-=-=-=-=-=-= -->
+    <link rel="stylesheet" href="{{STATIC_URL}}MockQuora/css/et-line-fonts.css">
+    <!-- =-=-=-=-=-=-= Google Fonts =-=-=-=-=-=-= -->
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic|Merriweather:400,300,300italic,400italic,700,700italic"
+          rel="stylesheet" type="text/css">
+    <!-- =-=-=-=-=-=-= Owl carousel =-=-=-=-=-=-= -->
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}MockQuora/css/owl.carousel.css">
+    <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}MockQuora/css/owl.style.css">
+    <!-- =-=-=-=-=-=-= Highliter Css =-=-=-=-=-=-= -->
+    <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}MockQuora/css/styles/shCoreDefault.css"/>
+    <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}MockQuora/css/chat.css"/>
+
+    <!-- =-=-=-=-=-=-= Css Animation =-=-=-=-=-=-= -->
+    <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}MockQuora/css/animate.min.css"/>
+    <!-- =-=-=-=-=-=-= Hover Dropdown =-=-=-=-=-=-= -->
+    <link type="text/css" rel="stylesheet" href="{{STATIC_URL}}MockQuora/css/bootstrap-dropdownhover.min.css"/>
+    <!-- JavaScripts -->
+    <script src="{{STATIC_URL}}MockQuora/js/modernizr.js"></script>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="http://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="http://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+    <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+    <script src="semantic/dist/semantic.min.js"></script>
+
+    <![endif]-->
+</head>
+
+{% block content %}
+<body>
+    <div class="text-center" style="color:#ffcccc">{{ message }}</div>
+	<div class="container text-left vertical-center">
+		<div class="row chat-container">
+			<div class="col-md-3 sidebar">
+				<div class="message-header">
+					<h6 class="text-muted">Users</h6>
+				</div>
+				<div class="sidebar-body">
+					<ul class="user-list">
+							{% for connection in connections %}
+								<li class="user-list-element active-chat-user">
+                                    <img class="rounded-circle" src="{{ connection.profile_pic }}" width="40">
+									<a href="/MockQuora/message/{{ connection.pk }}/" class="user-link">
+										{{ connection.user.first_name }} {{ connection.user.last_name }}
+									</a>
+									<span id="{{ connection.user.username }}"></span>
+								</li>
+							{% endfor %}
+
+					</ul>
+				</div>
+			</div>
+			<div class="col-md-6 main-view">
+				<div class="message-header">
+					<h6 class="text-muted">
+						{{ chat_user.user.first_name }} {{ chat_user.user.last_name }}
+					</h6>
+				</div>	
+				<div class="message-container" id="message-container-box">
+					<div class="message-wrapper">
+						{% for message in messages %}
+							{% if message.sender.user.username == user.user.username %}
+								<div class="message message-right">
+									<div class="message-text-container">
+										{{ message.message_text }}
+									</div>
+								</div>
+							{% else %}
+								{% if message.is_seen %}
+									<div class="message message-left">
+										<div class="message-text-container">
+											{{ message.message_text }}
+										</div>
+									</div>
+								{% else %}
+									<div class="message message-left">
+										<div class="message-text-container new-message" style="background:#777777; color:#ffffff">
+											{{ message.message_text }}
+										</div>
+									</div>
+								{% endif %}
+							{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+				<div class="message-input-container row">
+					<div class="col-lg-12">
+						<form id="message_form" method="post" action="">
+							<div class="input-group">
+                                {% csrf_token %}
+								<input type="text" name="message_text" class="form-control message-box" placeholder="Write your message..." id="message">
+								<span class="input-group-btn">
+									<input class="btn btn-secondary" type="submit" value="Send" id="input_message" autocomplete="off">
+								</span>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3 text-center Aligner">
+				<div class="Aligner-item">
+						<img class="rounded-circle mentee-user-profile" src="{{ chat_user.profile_pic }}">
+					<br><br>
+					<a href="/MockQuora/profile/{{ chat_user.pk }}"><h2 style="color:#8888ff">{{ chat_user.user.username }}</h2></a>
+						<small class="text-muted">{{ chat_user.user.first_name }} {{ chat_user.user.last_name }}</small><br>
+						<small class="text-muted">{{ chat_user.about_me }}</small><br>
+						<small class="text-muted">{{ chat_user.city }}, {{ chat_user.country }}</small>
+						<hr>
+				</div>
+			</div>
+		</div>
+	</div>
+<script type="text/javascript" src="{{STATIC_URL}}js/samp/chat.js"></script>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{{STATIC_URL}}js/samp/respond_to_request.js"></script>
+</body>
+<!-- <script>
+	var timeout = 5000;
+	$(document).ready(function worker() {
+	  $.get('/samp/pooling/', function(data) {
+	  	var obj = JSON.parse(data)['unread_messages'];
+  		for (var mentor in obj) {
+  			console.log(obj[mentor].length);
+  			var id = mentor;
+  			if(obj[mentor].length != 0){
+  				document.getElementById(id).innerHTML = obj[mentor].length;
+  				document.getElementById(id).classList.add("unread_messages");
+  			}
+  			else{
+  				document.getElementById(id).innerHTML = "";
+  				document.getElementById(id).classList.remove("unread_messages");
+  			}
+  		}
+		setTimeout(worker, timeout);
+	  });
+	});
+</script> -->
+{% endblock %}

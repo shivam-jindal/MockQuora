@@ -14,4 +14,6 @@ urlpatterns = patterns('',
                        url(r'^question/(?P<question_id>\d+)/$', views.question_page, name='question_page'),
                        url(r'^follow/(?P<follow_id>\d+)/(?P<followed_id>\d+)/$', views.follow, name='follow'),
                        url(r'^profile/(?P<user_id>\d+)/$', views.profile, name='profile'),
+                       url(r'^message/(?P<user_id>\d+)/$', views.message, name='message'),
+                       url(r'^chat/$', views.chat, name='chat'),
                        )
