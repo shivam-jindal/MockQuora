@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
                 ('answer_id', models.AutoField(serialize=False, primary_key=True)),
                 ('answer_text', models.TextField()),
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
+                ('image', models.ImageField(null=True, upload_to=b'MockQuora/static/MockQuora/images', blank=True)),
             ],
             options={
             },
@@ -173,7 +174,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='question',
             name='topic',
-            field=models.ForeignKey(related_name='questions_on_topic', to='MockQuora.Topic'),
+            field=models.ManyToManyField(related_name='questions_on_topic', null=True, to='MockQuora.Topic', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
