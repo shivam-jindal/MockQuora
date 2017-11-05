@@ -174,7 +174,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='question',
             name='topic',
+<<<<<<< HEAD
             field=models.ManyToManyField(related_name=b'questions_on_topic', null=True, to='MockQuora.Topic', blank=True),
+=======
+            field=models.ManyToManyField(related_name='questions_on_topic', null=True, to='MockQuora.Topic', blank=True),
+>>>>>>> 65f12c92c501161228c992e6c12ead01c0435cce
             preserve_default=True,
         ),
         migrations.AddField(
