@@ -254,14 +254,15 @@ def votes(request, vote_id, answer_id, comment_id, flag):
         answer = Answer.objects.get(pk=answer_id)
         question = answer.question
         if int(comment_id) == 0:
-            vote, created = Vote.objects.get_or_create(vote_by=user, vote_type=vote_id, answer=answer,
+            vote, created = Vote.objects.get_or_create(vote_by=user, answer=answer,
                                                        question=question)
         else:
             comment = Comment.objects.get(pk=comment_id)
-            vote, created = Vote.objects.get_or_create(vote_by=user, vote_type=vote_id, answer=answer,
+            vote, created = Vote.objects.get_or_create(vote_by=user, answer=answer,
                                                        question=question, comment=comment)
 
         if created:
+            vote.vote_type = int(vote_id) == int(True)
             vote.save()
             second_user = answer.answer_by
             notification = Notification(user=second_user,
@@ -269,7 +270,13 @@ def votes(request, vote_id, answer_id, comment_id, flag):
                                         url=BASE_URL + '/MockQuora/answer/' + str(question.pk) + '/' + str(answer_id))
             notification.save()
         else:
-            vote.delete()
+            if int(vote.vote_type) == int(vote_id):
+                vote.delete()
+            else:
+                vt = int(vote_id) == int(True)
+                vote.vote_type = vt
+                vote.save()
+
         if int(flag) == 1:
             return HttpResponseRedirect('/MockQuora/question/' + str(question.pk))
         else:
@@ -376,25 +383,49 @@ def answer_page(request, question_id, answer_id):
         user = UserProfile.objects.get(user=request.user)
         notification = Notification.objects.filter(user=user).order_by('-timestamp')
         comments = answer.comments.all()
-        form = CommentForm()
 
         if user not in answer.viewers.all():
             answer.viewers.add(user)
 
+        if user not in question.viewers.all():
+            question.viewers.add(user)
+
         if request.method == 'POST':
             form = CommentForm(request.POST)
             if form.is_valid():
+                print request.POST
                 comment_text = form.cleaned_data['comment_text']
-                comment = Comment(question=question, answer=answer, comment_text=comment_text, comment_by=user)
+                parent_id = request.POST.get('parent_id', 0)
+                print parent_id
+                if int(parent_id) == 0:
+                    comment = Comment(question=question, answer=answer, comment_text=comment_text, comment_by=user)
+                else:
+                    parent_comment = Comment.objects.get(pk=int(parent_id))
+                    comment = Comment(question=question, answer=answer, comment_text=comment_text, comment_by=user, parent_comment=parent_comment)
                 comment.save()
                 second_user = answer.answer_by
-                notification = Notification(user=second_user,
-                                            notification_text=str(user.user.username) + " commented on your answer.",
-                                            url=BASE_URL + '/MockQuora/answer/' + str(question.pk) + '/' + str(answer_id))
-                notification.save()
-                message = "success"
+                notif = Notification(user=second_user,
+                                     notification_text=str(user.user.username) + " commented on your answer.",
+                                     url=BASE_URL + '/MockQuora/answer/' + str(question.pk) + '/' + str(answer_id))
+                notif.save()
+                print "success"
             else:
                 message = form.errors
+
+        up, down, book = False, False, False
+        if Vote.objects.filter(answer=answer, question=question, vote_by=user, vote_type=True):
+            up = True
+        if Vote.objects.filter(answer=answer, question=question, vote_by=user, vote_type=False):
+            down = True
+        if user in answer.bookmarks.all():
+            book = True
+
+        upvote_count = Vote.objects.filter(answer=answer, question=question, vote_type=True).count()
+
+        for cmn in comments:
+            if Vote.objects.filter(comment=cmn):
+                pass
+        form = CommentForm()
 
         context = {
             'question': question,
@@ -403,7 +434,9 @@ def answer_page(request, question_id, answer_id):
             'form': form,
             'message': message,
             'user': user,
-            'notifications': notification
+            'notifications': notification,
+            'flags': (up, down, book),
+            'upvote_count': upvote_count
         }
         return render(request, 'MockQuora/answer.html', context)
 

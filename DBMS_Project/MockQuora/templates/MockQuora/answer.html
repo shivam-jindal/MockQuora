@@ -103,7 +103,7 @@
                 <span class="icon-bar"></span>
             </button>
             <!-- logo -->
-            <a href="index.html" class="navbar-brand"><img class="img-responsive" alt=""
+            <a href="/MockQuuora/feed/" class="navbar-brand"><img class="img-responsive" alt=""
                                                            src="{{STATIC_URL}}MockQuora/images/logo.png">
             </a>
             <!-- header end -->
@@ -113,7 +113,7 @@
             <!-- right bar -->
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <div class="btn-nav"><a href="post_question.html" class="btn btn-primary btn-small navbar-btn">Post
+                    <div class="btn-nav"><a href="/MockQuora/post_question/" class="btn btn-primary btn-small navbar-btn">Post
                         Question</a>
                     </div>
                 </li>
@@ -138,11 +138,6 @@
                 <!-- end col -->
                 <div class="col-md-6 col-sm-5 co-xs-12 text-right">
                     <div class="bread">
-                        <ol class="breadcrumb">
-                            <li><a href="feed.html#">Home</a>
-                            </li>
-                            <li class="active">Question</li>
-                        </ol>
                     </div>
                     <!-- end bread -->
                 </div>
@@ -209,29 +204,42 @@
                                 <div class="media-body">
                                     <div class="mar-btm">
                                         <h4><a href="/MockQuora/profile/{{answer.answer_by.pk}}"
-                                               class="btn-link text-semibold media-heading box-inline">{{answer.answer_by.user.username}}</a>
+                                               class="btn-link text-semibold media-heading box-inline">{{ answer.answer_by.user.username}}</a>
                                         </h4>
-                                        <p class="text-muted text-sm"><i class="fa fa-mobile fa-lg"></i>- on {{
-                                            question.timestamp }}</p>
+                                        <p class="text-muted text-sm"> {{ question.timestamp }}</p>
                                     </div>
-                                    <img src="/{{answer.image.url}}">
                                     <p>{{ answer.answer_text }} </p>
 
                                     <div class="pad-ver pull-right">
+                                        <span><i aria-hidden="true"></i> {{ upvote_count }} upvotes  </span>
+
                                         <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{answer.viewers.count}} views</span>
                                         <a class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip"
                                            data-placement="bottom" data-original-title="Upvote"
-                                           href="/MockQuora/vote/1/{{answer.answer_id}}/0/0"><i
-                                                class="fa fa-thumbs-up"></i></a>
+                                           href="/MockQuora/vote/1/{{answer.pk}}/0/0">
+                                            {% if flags.0 %}
+                                                <i class="fa fa-thumbs-up" style="color:#0000ff"></i>
+                                            {% else %}
+                                                <i class="fa fa-thumbs-up"></i>
+                                            {% endif %}</a>
                                         <a class="btn btn-sm btn-default btn-hover-danger"
-                                           href="/MockQuora/vote/0/{{answer.answer_id}}/0/0"
-                                           data-original-title="Downvote" data-placement="bottom" data-toggle="tooltip"><i
-                                                class="fa fa-thumbs-down"></i></a>
+                                           href="/MockQuora/vote/0/{{answer.pk}}/0/0"
+                                           data-original-title="Downvote" data-placement="bottom" data-toggle="tooltip">
+                                            {% if flags.1 %}
+                                                <i class="fa fa-thumbs-down" style="color:#0000ff"></i>
+                                            {% else %}
+                                                <i class="fa fa-thumbs-down"></i>
+                                            {% endif %}</a>
+                                        </a>
                                         <a class="btn btn-sm btn-default btn-hover-success"
                                            href="/MockQuora/bookmark/{{answer.answer_id}}"
-                                           data-original-title="Bookmark" data-placement="bottom" data-toggle="tooltip"><i
-                                                class="fa fa-bookmark"></i></a>
-
+                                           data-original-title="Bookmark" data-placement="bottom" data-toggle="tooltip">
+                                            {% if flags.2 %}
+                                                <i class="fa fa-bookmark" style="color:#0000ff"></i>
+                                            {% else %}
+                                                <i class="fa fa-bookmark"></i>
+                                            {% endif %}</a>
+                                        </a>
                                     </div>
 
                                 </div>
@@ -319,6 +327,7 @@
                                             <span style="color: Red">{{ message }}</span><br>
                                             {% csrf_token %}
                                             {{ form }}
+                                            <input id="parent_comment" type="hidden" name="parent_id" value="{{ comment.pk }}">
                                             <button>Reply to this Comment</button>
                                         </form>
                                     </div>
@@ -338,6 +347,7 @@
                                     <span style="color: Red">{{ message }}</span><br>
                                     {% csrf_token %}
                                     {{ form }}
+                                    <input id="parent_id" type="hidden" name="parent_id" value="0">
                                     <button class="btn btn-primary btn-lg btn-block">Post Your Comment</button>
                                 </form>
                             </div>
@@ -365,7 +375,7 @@
                                                                                        alt="avatar"
                                                                                        src="{{question.posted_by.profile_pic}}">
                                         <h2 class="widget-heading text-light"><a
-                                                href="/MockQuora/profile/{{answer.answer_by.pk}}"><strong>{{question.posted_by.user.username}}</strong></a>
+                                                href="/MockQuora/profile/{{ question.posted_by.pk}}"><strong>{{ question.posted_by.user.username}}</strong></a>
                                         </h2>
                                         <h4 class="widget-heading text-light-op"><em>{{question.posted_by.tagline}}</em>
                                         </h4>

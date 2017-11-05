@@ -117,7 +117,7 @@ class Vote(models.Model):
         return "{0}, {1}, {2}".format("Vote by ", self.vote_by, self.vote_type)
 
     class Meta:
-        unique_together = (('question', 'answer', 'comment'),)
+        unique_together = (('question', 'answer', 'comment', 'vote_by'),)
 
 
 class Follow(models.Model):
