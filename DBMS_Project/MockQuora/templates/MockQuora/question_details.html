@@ -178,6 +178,13 @@
                                 </div>
                             </div>
                         </div>
+                            <br>
+                            <p>Ask someone to answer this question:</p>
+                            <form method="get"  action="/MockQuora/askto/{{ question.pk }}" id="search-form">
+                                <input type="text" name="username" placeholder="Type username here">
+                                <input type="submit" value="Ask" class="search-btn">
+                            </form>
+
                     </div>
                     <!-- Question Listing End -->
 

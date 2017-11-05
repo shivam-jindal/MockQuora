@@ -73,6 +73,7 @@ def askto(request, question_id):
         user = UserProfile.objects.get(user=request.user)
         question = Question.objects.get(pk=question_id)
         username = request.GET.get('username', None)
+        print username
         if username is not None:
             second_user = UserProfile.objects.get(user__username=username)
             tag = Tag(question=question, asked_by=user, asked_to=second_user)
@@ -81,10 +82,11 @@ def askto(request, question_id):
                                         notification_text=str(user.user.username) + " asked you to answer " + str(
                                             question.question_text), url=BASE_URL + '/MockQuora/question/' + str(question_id))
             notification.save()
-        return HttpResponseRedirect('/MockQuora/question' + str(question_id))
+            print "success"
+        return HttpResponseRedirect('/MockQuora/question/' + str(question_id))
     except Exception as e:
         print "[Exception]: ", e
-        raise Http404
+        return HttpResponse("User with that username does not exist!")
 
 
 @login_required
