@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:5="http://www.w3.org/1999/xhtml">
 
 <head>
     <meta charset="utf-8">
@@ -210,6 +210,10 @@
                                     </div>
                                     <p>{{ answer.answer_text }} </p>
 
+                                    {% if answer.image %}
+                                        <img src='/{{ answer.image.url|slice:"10:" }}'>
+                                    {% endif %}
+                                    <br>
                                     <div class="pad-ver pull-right">
                                         <span><i aria-hidden="true"></i> {{ upvote_count }} upvotes  </span>
 
@@ -257,63 +261,87 @@
                             <ol class="comment-list">
                                 <!-- comment-list    -->
                                 {% for comment in comments %}
-                                {% if comment.parent_comment %}
+                                {% if comment.0.parent_comment %}
                                 {% else %}
                                 <li class="comment">
                                     <div class="comment-info">
                                         <img class="pull-left hidden-xs img-circle"
-                                             src="{{comment.comment_by.profile_pic}}" alt="author">
+                                             src="{{comment.0.comment_by.profile_pic}}" alt="author">
                                         <div class="author-desc">
                                             <div class="author-title">
-                                                <strong>{{comment.comment_by.user.first_name}}
-                                                    {{comment.comment_by.user.last_name}}</strong>
+                                                <strong>{{comment.0.comment_by.user.first_name}}
+                                                    {{comment.0.comment_by.user.last_name}}</strong>
                                                 <ul class="list-inline pull-right">
-                                                    <li><a href="#">{{comment.timestamp}}</a>
+                                                    <li><a href="#">{{comment.0.timestamp}}</a>
                                                     </li>
                                                 </ul>
                                             </div>
-                                            <p>{{comment.comment_text}}</p>
+                                            <p>{{comment.0.comment_text}}</p>
                                             <div class="pad-ver pull-right">
                                                 <a class="btn btn-sm btn-default btn-hover-success"
                                                    data-toggle="tooltip" data-placement="bottom"
                                                    data-original-title="Upvote"
-                                                   href="/MockQuora/vote/1/{{answer.answer_id}}/{{comment.comment_id}}/0"><i
-                                                        class="fa fa-thumbs-up"></i></a>
+                                                   href="/MockQuora/vote/1/{{answer.answer_id}}/{{comment.0.comment_id}}/0">
+                                                    {% if comment.1 == 1 %}
+                                                    <i class="fa fa-thumbs-up" style="color:#0000ff"></i>
+                                                    {% else %}
+                                                    <i class="fa fa-thumbs-up"></i>
+                                                    {% endif %}
+                                                </a>
                                                 <a class="btn btn-sm btn-default btn-hover-danger"
-                                                   href="/MockQuora/vote/0/{{answer.answer_id}}/{{comment.comment_id}}/0"
+                                                   href="/MockQuora/vote/0/{{answer.answer_id}}/{{comment.0.comment_id}}/0"
                                                    data-original-title="Downvote" data-placement="bottom"
-                                                   data-toggle="tooltip"><i class="fa fa-thumbs-down"></i></a>
+                                                   data-toggle="tooltip">
+
+                                                    {% if comment.1 == 0 %}
+                                                    <i class="fa fa-thumbs-down" style="color:#0000ff"></i>
+                                                    {% else %}
+                                                    <i class="fa fa-thumbs-down"></i>
+                                                    {% endif %}
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
                                     <ol class="children">
                                         {% for childComment in comments %}
-                                        {% if childComment.parent_comment.pk == comment.pk %}
+                                        {% if childComment.0.parent_comment.pk == comment.0.pk %}
                                         <li class="comment">
                                             <div class="comment-info">
                                                 <img class="pull-left hidden-xs img-circle"
-                                                     src="{{childComment.comment_by.profile_pic}}" alt="author">
+                                                     src="{{childComment.0.comment_by.profile_pic}}" alt="author">
                                                 <div class="author-desc">
                                                     <div class="author-title">
-                                                        <strong>{{childComment.comment_by.user.first_name}}
-                                                            {{childComment.comment_by.user.last_name}}</strong>
+                                                        <strong>{{childComment.0.comment_by.user.first_name}}
+                                                            {{childComment.0.comment_by.user.last_name}}</strong>
                                                         <ul class="list-inline pull-right">
                                                             <li>
-                                                                <a href="blog-detial.html#">{{childComment.timestamp}}</a>
+                                                                <a href="blog-detial.html#">{{childComment.0.timestamp}}</a>
                                                             </li>
                                                         </ul>
                                                     </div>
-                                                    <p>{{childComment.comment_text}}</p>
+                                                    <p>{{childComment.0.comment_text}}</p>
                                                     <div class="pad-ver pull-right">
                                                         <a class="btn btn-sm btn-default btn-hover-success"
                                                            data-toggle="tooltip" data-placement="bottom"
                                                            data-original-title="Upvote"
-                                                           href="/MockQuora/vote/1/{{answer.answer_id}}/{{childComment.comment_id}}/0"><i
-                                                                class="fa fa-thumbs-up"></i></a>
+                                                           href="/MockQuora/vote/1/{{answer.answer_id}}/{{childComment.0.comment_id}}/0">
+                                                            {% if childComment.1 == 1 %}
+                                                                <i class="fa fa-thumbs-up" style="color:#0000ff"></i>
+                                                            {% else %}
+                                                                <i class="fa fa-thumbs-up"></i>
+                                                            {% endif %}
+
+                                                        </a>
                                                         <a class="btn btn-sm btn-default btn-hover-danger"
-                                                           href="/MockQuora/vote/0/{{answer.answer_id}}/{{childComment.comment_id}}/0"
+                                                           href="/MockQuora/vote/0/{{answer.answer_id}}/{{childComment.0.comment_id}}/0"
                                                            data-original-title="Downvote" data-placement="bottom"
-                                                           data-toggle="tooltip"><i class="fa fa-thumbs-down"></i></a>
+                                                           data-toggle="tooltip">
+                                                            {% if childComment.1 == 0 %}
+                                                                <i class="fa fa-thumbs-down" style="color:#0000ff"></i>
+                                                            {% else %}
+                                                                <i class="fa fa-thumbs-down"></i>
+                                                            {% endif %}
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -327,7 +355,7 @@
                                             <span style="color: Red">{{ message }}</span><br>
                                             {% csrf_token %}
                                             {{ form }}
-                                            <input id="parent_comment" type="hidden" name="parent_id" value="{{ comment.pk }}">
+                                            <input id="parent_comment" type="hidden" name="parent_id" value="{{ comment.0.pk }}">
                                             <button>Reply to this Comment</button>
                                         </form>
                                     </div>

@@ -80,7 +80,8 @@ def askto(request, question_id):
             tag.save()
             notification = Notification(user=second_user,
                                         notification_text=str(user.user.username) + " asked you to answer " + str(
-                                            question.question_text), url=BASE_URL + '/MockQuora/question/' + str(question_id))
+                                            question.question_text),
+                                        url=BASE_URL + '/MockQuora/question/' + str(question_id))
             notification.save()
             print "success"
         return HttpResponseRedirect('/MockQuora/question/' + str(question_id))
@@ -255,8 +256,9 @@ def votes(request, vote_id, answer_id, comment_id, flag):
         question = answer.question
         if int(comment_id) == 0:
             vote, created = Vote.objects.get_or_create(vote_by=user, answer=answer,
-                                                       question=question)
+                                                       question=question, comment=None)
         else:
+            print "here"
             comment = Comment.objects.get(pk=comment_id)
             vote, created = Vote.objects.get_or_create(vote_by=user, answer=answer,
                                                        question=question, comment=comment)
@@ -353,9 +355,9 @@ def question_page(request, question_id):
         final_answers = []
         for ans in answers:
             up, down = False, False
-            if Vote.objects.filter(answer=ans, question=ans.question, vote_by=user, vote_type=True):
+            if Vote.objects.filter(answer=ans, question=ans.question, vote_by=user, vote_type=True, comment=None):
                 up = True
-            if Vote.objects.filter(answer=ans, question=ans.question, vote_by=user, vote_type=False):
+            if Vote.objects.filter(answer=ans, question=ans.question, vote_by=user, vote_type=False, comment=None):
                 down = True
             final_answers.append((ans, up, down))
 
@@ -401,7 +403,8 @@ def answer_page(request, question_id, answer_id):
                     comment = Comment(question=question, answer=answer, comment_text=comment_text, comment_by=user)
                 else:
                     parent_comment = Comment.objects.get(pk=int(parent_id))
-                    comment = Comment(question=question, answer=answer, comment_text=comment_text, comment_by=user, parent_comment=parent_comment)
+                    comment = Comment(question=question, answer=answer, comment_text=comment_text, comment_by=user,
+                                      parent_comment=parent_comment)
                 comment.save()
                 second_user = answer.answer_by
                 notif = Notification(user=second_user,
@@ -413,24 +416,29 @@ def answer_page(request, question_id, answer_id):
                 message = form.errors
 
         up, down, book = False, False, False
-        if Vote.objects.filter(answer=answer, question=question, vote_by=user, vote_type=True):
+        if Vote.objects.filter(answer=answer, question=question, vote_by=user, vote_type=True, comment=None):
             up = True
-        if Vote.objects.filter(answer=answer, question=question, vote_by=user, vote_type=False):
+        if Vote.objects.filter(answer=answer, question=question, vote_by=user, vote_type=False, comment=None):
             down = True
         if user in answer.bookmarks.all():
             book = True
 
-        upvote_count = Vote.objects.filter(answer=answer, question=question, vote_type=True).count()
+        upvote_count = Vote.objects.filter(answer=answer, question=question, vote_type=True, comment=None).count()
 
+        final_comments = []
         for cmn in comments:
-            if Vote.objects.filter(comment=cmn):
-                pass
+            v = Vote.objects.filter(comment=cmn, vote_by=user)
+            if v.count() == 1:
+                final_comments.append((cmn, v[0].vote_type))
+            else:
+                final_comments.append((cmn, 2))
+
         form = CommentForm()
 
         context = {
             'question': question,
             'answer': answer,
-            'comments': comments,
+            'comments': final_comments,
             'form': form,
             'message': message,
             'user': user,
@@ -573,12 +581,14 @@ def notifications(request):
     try:
         user = UserProfile.objects.get(user=request.user)
         notification = Notification.objects.filter(user=user).order_by('-timestamp')
-
         context = {
             'user': user,
             'notifications': notification
         }
-        print context
+
+        for notif in notification:
+            notif.is_read = True
+            notif.save()
         return render(request, 'MockQuora/notification.html', context)
     except Exception as e:
         print "[Exception]: ", e

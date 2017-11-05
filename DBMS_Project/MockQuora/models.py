@@ -109,7 +109,7 @@ class Comment(models.Model):
 class Vote(models.Model):
     question = models.ForeignKey(Question)
     answer = models.ForeignKey(Answer)
-    comment = models.ForeignKey(Comment, default=0)
+    comment = models.ForeignKey(Comment, default=0, null=True, blank=True)
     vote_by = models.ForeignKey(UserProfile, related_name="user_votes")
     vote_type = models.BooleanField(blank=False, default=True)
 
