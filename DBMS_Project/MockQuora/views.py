@@ -319,6 +319,9 @@ def question_page(request, question_id):
         notification = Notification.objects.filter(user=user).order_by('-timestamp')
         form = AnswerForm()
 
+        if user not in question.viewers.all():
+            question.viewers.add(user)
+
         if request.method == 'POST':
             form = AnswerForm(request.POST)
             if form.is_valid():
@@ -360,6 +363,9 @@ def answer_page(request, question_id, answer_id):
         notification = Notification.objects.filter(user=user).order_by('-timestamp')
         comments = answer.comments.all()
         form = CommentForm()
+
+        if user not in answer.viewers.all():
+            answer.viewers.add(user)
 
         if request.method == 'POST':
             form = CommentForm(request.POST)
