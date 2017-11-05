@@ -8,6 +8,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count, Sum
 
+BASE_URL = "http://127.0.0.1:8000"
+
 
 def index(request):
     return render(request, 'MockQuora/index.html', {})
@@ -77,7 +79,7 @@ def askto(request, question_id):
             tag.save()
             notification = Notification(user=second_user,
                                         notification_text=str(user.user.username) + " asked you to answer " + str(
-                                            question.question_text), url='/MockQuora/question/' + str(question_id))
+                                            question.question_text), url=BASE_URL + '/MockQuora/question/' + str(question_id))
             notification.save()
         return HttpResponseRedirect('/MockQuora/question' + str(question_id))
     except Exception as e:
@@ -113,6 +115,7 @@ def add_profile_details(request):
 def feed(request):
     query = request.GET.get('search_query', None)
     user = UserProfile.objects.get(user=request.user)
+    notification = Notification.objects.filter(user=user).order_by('-timestamp')
 
     if query is not None:
         questions = Question.objects.filter(Q(question_text__contains=query)).order_by('-timestamp')
@@ -171,7 +174,9 @@ def feed(request):
         'answered_questions': answered_questions,
         'unanswered_questions': unanswered_questions,
         'popular_users': final_popular_users,
-        'trending_topics': final_trending_topics
+        'trending_topics': final_trending_topics,
+        'user': user,
+        'notifications': notification
     }
 
     return render(request, 'MockQuora/feed.html', context)
@@ -184,6 +189,12 @@ def follow(request, follow_id, followed_id):
         follows, created = Follow.objects.get_or_create(follower=user, followed_id=followed_id, flag=follow_id)
         if created:
             follows.save()
+            if int(follow_id) == 0:
+                second_user = UserProfile.objects.get(pk=followed_id)
+                notification = Notification(user=second_user,
+                                            notification_text=str(user.user.username) + " started following you.",
+                                            url=BASE_URL + '/MockQuora/profile/' + str(user.pk))
+                notification.save()
         else:
             follows.delete()
         return HttpResponseRedirect('/MockQuora/feed')
@@ -199,8 +210,14 @@ def follow_profile(request, followed_id):
         follows, created = Follow.objects.get_or_create(follower=user, followed_id=followed_id, flag=0)
         if created:
             follows.save()
+            second_user = UserProfile.objects.get(pk=followed_id)
+            notification = Notification(user=second_user,
+                                        notification_text=str(user.user.username) + " started following you.",
+                                        url=BASE_URL + '/MockQuora/profile/' + str(user.pk))
+            notification.save()
         else:
             follows.delete()
+
         return HttpResponseRedirect('/MockQuora/profile/' + str(followed_id))
 
     except Exception as e:
@@ -242,6 +259,11 @@ def votes(request, vote_id, answer_id, comment_id, flag):
 
         if created:
             vote.save()
+            second_user = answer.answer_by
+            notification = Notification(user=second_user,
+                                        notification_text=str(user.user.username) + " left a vote on your answer.",
+                                        url=BASE_URL + '/MockQuora/answer/' + str(question.pk) + '/' + str(answer_id))
+            notification.save()
         else:
             vote.delete()
         if int(flag) == 1:
@@ -259,6 +281,7 @@ def post_question(request):
     try:
         message = ""
         user = UserProfile.objects.get(user=request.user)
+        notification = Notification.objects.filter(user=user).order_by('-timestamp')
         form = QuestionForm()
 
         if request.method == "POST":
@@ -275,6 +298,8 @@ def post_question(request):
         context = {
             'form': form,
             'message': message,
+            'user': user,
+            'notifications': notification
         }
 
         return render(request, 'MockQuora/post_question.html', context)
@@ -291,6 +316,7 @@ def question_page(request, question_id):
         question = Question.objects.get(question_id=question_id)
         answers = question.answers.order_by('-timestamp')
         user = UserProfile.objects.get(user=request.user)
+        notification = Notification.objects.filter(user=user).order_by('-timestamp')
         form = AnswerForm()
 
         if request.method == 'POST':
@@ -300,6 +326,11 @@ def question_page(request, question_id):
                 image = request.FILES['image']
                 answer = Answer(question=question, answer_text=answer_text, answer_by=user, image=image)
                 answer.save()
+                second_user = question.posted_by
+                notification = Notification(user=second_user,
+                                            notification_text=str(user.user.username) + " answered your question.",
+                                            url=BASE_URL + '/MockQuora/question/' + str(question.pk) )
+                notification.save()
                 message = "success"
             else:
                 message = form.errors
@@ -308,7 +339,9 @@ def question_page(request, question_id):
             'question': question,
             'answers': answers,
             'form': form,
-            'message': message
+            'message': message,
+            'user': user,
+            'notifications': notification
         }
         return render(request, 'MockQuora/question_details.html', context)
 
@@ -324,6 +357,7 @@ def answer_page(request, question_id, answer_id):
         question = Question.objects.get(question_id=question_id)
         answer = Answer.objects.get(answer_id=answer_id)
         user = UserProfile.objects.get(user=request.user)
+        notification = Notification.objects.filter(user=user).order_by('-timestamp')
         comments = answer.comments.all()
         form = CommentForm()
 
@@ -333,6 +367,11 @@ def answer_page(request, question_id, answer_id):
                 comment_text = form.cleaned_data['comment_text']
                 comment = Comment(question=question, answer=answer, comment_text=comment_text, comment_by=user)
                 comment.save()
+                second_user = answer.answer_by
+                notification = Notification(user=second_user,
+                                            notification_text=str(user.user.username) + " commented on your answer.",
+                                            url=BASE_URL + '/MockQuora/answer/' + str(question.pk) + '/' + str(answer_id))
+                notification.save()
                 message = "success"
             else:
                 message = form.errors
@@ -342,7 +381,9 @@ def answer_page(request, question_id, answer_id):
             'answer': answer,
             'comments': comments,
             'form': form,
-            'message': message
+            'message': message,
+            'user': user,
+            'notifications': notification
         }
         return render(request, 'MockQuora/answer.html', context)
 
@@ -364,6 +405,7 @@ def profile(request, user_id):
         question_count = Question.objects.filter(posted_by=user, is_anonymous=False).count()
         answers = Answer.objects.filter(answer_by=user)
         answer_count = answers.count()
+        notification = Notification.objects.filter(user=profile_user).order_by('-timestamp')
         upvotes_count = 0
         for answer in answers:
             upvotes_count += Vote.objects.filter(answer=answer, comment=-1).count()
@@ -382,7 +424,8 @@ def profile(request, user_id):
             'following': followings,
             'question_count': question_count,
             'answer_count': answer_count,
-            'upvotes_count': upvotes_count
+            'upvotes_count': upvotes_count,
+            'notifications': notification
         }
 
         return render(request, "MockQuora/profile.html", context)
@@ -429,6 +472,11 @@ def message(request, user_id):
                 if message_text is not None:
                     msg = Message(sender=user, receiver=second_user, message_text=message_text)
                     msg.save()
+
+                    notification = Notification(user=second_user,
+                                                notification_text=str(user.user.username) + " messaged you.",
+                                                url=BASE_URL + '/MockQuora/message/' + str(user.pk))
+                    notification.save()
                     print "message added"
 
             messages = Message.objects.filter(
@@ -477,7 +525,14 @@ def notifications(request):
             'user': user,
             'notifications': notification
         }
+        print context
         return render(request, 'MockQuora/notification.html', context)
     except Exception as e:
         print "[Exception]: ", e
         raise Http404
+
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect('/MockQuora/')

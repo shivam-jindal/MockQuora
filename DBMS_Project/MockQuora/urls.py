@@ -22,5 +22,6 @@ urlpatterns = patterns('',
                        url(r'^bookmark/(?P<answer_id>\d+)/$', views.bookmark, name='bookmark'),
                        url(r'^chat/$', views.chat, name='chat'),
                        url(r'^notifications/$', views.notifications, name='notifications'),
+                       url(r'^logout/$', views.user_logout, name='logout'),
                        url(r'^askto/(?P<question_id>\d+)/$', views.askto, name='askto'),
                        )
