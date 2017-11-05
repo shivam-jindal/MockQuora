@@ -53,7 +53,7 @@ class Question(models.Model):
     is_anonymous = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
     viewers = models.ManyToManyField(UserProfile, related_name="viewed_questions")
-    topic = models.ForeignKey(Topic, related_name="questions_on_topic")
+    topic = models.ManyToManyField(Topic, related_name="questions_on_topic", null=True, blank=True)
 
     def __unicode__(self):
         return self.question_text
@@ -80,7 +80,8 @@ class Answer(models.Model):
     answer_text = models.TextField(blank=False)
     timestamp = models.DateTimeField(auto_now_add=True)
     viewers = models.ManyToManyField(UserProfile, related_name="viewed_answers")
-    bookmarks = models.ManyToManyField(UserProfile, related_name="bookmarks")
+    bookmarks = models.ManyToManyField(UserProfile, related_name="bookmarks", blank=True, null=True)
+    image = models.ImageField(upload_to="MockQuora/static/MockQuora/images", blank=True, null=True)
 
     def __unicode__(self):
         return "{0}, {1}".format("Answer by ", self.answer_by)
@@ -96,7 +97,7 @@ class Comment(models.Model):
     comment_text = models.TextField(blank=False)
     comment_by = models.ForeignKey(UserProfile, related_name="user_comments")
     timestamp = models.DateTimeField(auto_now_add=True)
-    parent_comment = models.ForeignKey('self', default=-1)
+    parent_comment = models.ForeignKey('self', default=0, blank=True, null=True)
 
     def __unicode__(self):
         return self.comment_text

@@ -153,7 +153,9 @@
 								</div>
 								<div class="col-md-12 col-sm-12 col-xs-12">
 									<div class="tagcloud">
-										<a>{{question.topic}}</a>
+										{% for topics in question.topic.all %}
+										<a>{{topics.name}}</a>
+										{% endfor %}
 									</div>
 								</div>
 							</div>
@@ -177,10 +179,17 @@
 								</div>
 								<div class="media-body">
 									<div class="mar-btm">
-										<h4><a href="profile/{{asnwer.answer_by.pk}}" class="btn-link text-semibold media-heading box-inline">{{answer.answer_by.user.username}}</a></h4>
+										<h4><a href="profile/{{answer.answer_by.pk}}" class="btn-link text-semibold media-heading box-inline">{{answer.answer_by.user.username}}</a></h4>
 										<p class="text-muted text-sm"><i class="fa fa-mobile fa-lg"></i>- on {{ question.timestamp }}</p>
 									</div>
-									<p>{{ answer.answer_text }} </p>
+									<img src="/{{answer.image.url}}">
+									<p>{{ answer.answer_text|truncatechars:500 }} </p>
+									<div class="text-center" style="background:#eeeeee">
+                                        <a href="/MockQuora/answer/{{question.pk}}/{{answer.pk}}"
+                                           style="color:#7777aa">read more <span
+                                                class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+										</a>
+                                    </div>
 									<div class="pad-ver pull-right">
 										<span><i class="fa fa fa-eye" aria-hidden="true"></i> {{answer.viewers.count}} views</span>
 										<a class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip" data-placement="bottom" data-original-title="Upvote" href="vote_answer/{{answer.answer_id}}/1"><i class="fa fa-thumbs-up"></i></a>
@@ -194,7 +203,7 @@
 							{% endfor %}
 							<!-- Reply Grid End -->
 
-							<form action="" method="post">
+							<form enctype="multipart/form-data"  action="" method="post">
 								<div class="form-group">
 									<label>Post Your Answer</label>
 

@@ -25,10 +25,11 @@ class RegisterUserForm(forms.ModelForm):
 
 class AnswerForm(forms.Form):
     answer_text = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'cols': 85}))
+    image = forms.ImageField()
 
 
 class CommentForm(forms.Form):
-    comment_text = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'cols': 85}))
+    comment_text = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'cols': 80}))
 
 
 class QuestionForm(forms.ModelForm):

@@ -25,7 +25,7 @@ def user_login(request):
             if user:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponseRedirect('feed/')
+                    return HttpResponseRedirect('/MockQuora/feed/')
                 else:
                     error_msg = "Your account is disabled!"
             else:
@@ -74,7 +74,7 @@ def add_profile_details(request):
             user_profile = form.save(commit=False)
             user_profile.user = request.user
             user_profile.save()
-            user_profile.add(*form.cleaned_data["interests"])
+            user_profile.interests.add(*form.cleaned_data["interests"])
             user_profile.save()
             return HttpResponseRedirect('/MockQuora/feed/')
         else:
@@ -91,6 +91,7 @@ def add_profile_details(request):
 
 @login_required
 def feed(request):
+    print request.GET
     if request.method == "POST":
         pass
 
@@ -99,34 +100,69 @@ def feed(request):
     followed_topics_ids = [x.followed_id for x in followings]
     followed_topics = Topic.objects.filter(topic_id__in=followed_topics_ids)
     questions = Question.objects.filter(Q(topic__in=user.interests.all())
-                                        | Q(topic__in=followed_topics)).order_by('timestamp')
+                                       | Q(topic__in=followed_topics)).order_by('timestamp')
     #questions = questions.filter(~Q(posted_by=user))
 
     answered_questions = []
     unanswered_questions = []
     for question in questions:
+        if Follow.objects.filter(follower=user, followed_id=question.pk, flag=1).count() == 1:
+            following_status = True
+        else:
+            following_status = False
         if question.answers.count() == 0:
-            unanswered_questions.append(question)
+            unanswered_questions.append((question, following_status))
         else:
             most_popular_answer = question.answers.annotate(viewer_count=Count('viewers')).order_by('-viewer_count')[:1]
-            answered_questions.append((question, most_popular_answer))
+            answered_questions.append((question, most_popular_answer[0], following_status))
 
     popular_answers = Answer.objects.annotate(viewer_count=Count('viewers')).order_by('-viewer_count')
+    #popular_answers = popular_answers.filter(~Q(answer_by=user))
     popular_users = [ans.answer_by for ans in popular_answers]
 
+    final_popular_users = []
+    #for usr in set(popular_users):
+    for usr in popular_users:
+        if Follow.objects.filter(follower=user, followed_id=usr.pk, flag=0).count() == 1:
+            final_popular_users.append((usr, True))
+        else:
+            final_popular_users.append((usr, False))
+
     popular_questions = Question.objects.annotate(viewer_count=Count('viewers')).order_by('-viewer_count')
-    trending_topics = [ques.topic for ques in popular_questions]
+    trending_topics = []
+
+    for ques in popular_questions:
+        trending_topics.extend(ques.topic.all())
+    final_trending_topics = []
+    for topic in set(trending_topics):
+        if Follow.objects.filter(follower=user, followed_id=topic.pk, flag=2).count() == 1:
+            final_trending_topics.append((topic, True))
+        else:
+            final_trending_topics.append((topic, False))
 
     context = {
         'answered_questions': answered_questions,
         'unanswered_questions': unanswered_questions,
-        'popular_users': popular_users,
-        'trending_topics': trending_topics
+        'popular_users': final_popular_users,
+        'trending_topics': final_trending_topics
     }
 
-    print context
-
     return render(request, 'MockQuora/feed.html', context)
+
+
+@login_required
+def follow(request, follow_id, followed_id):
+    try:
+        user = UserProfile.objects.get(user=request.user)
+        follows, created = Follow.objects.get_or_create(follower=user, followed_id=followed_id, flag=follow_id)
+        if created:
+            follows.save()
+        else:
+            follows.delete()
+        return HttpResponseRedirect('/MockQuora/feed')
+    except Exception as e:
+        print "[Exception]: ", e
+        raise Http404
 
 
 @login_required
@@ -172,7 +208,8 @@ def question_page(request, question_id):
             form = AnswerForm(request.POST)
             if form.is_valid():
                 answer_text = form.cleaned_data['answer_text']
-                answer = Answer(question=question, answer_text=answer_text, answer_by=user)
+                image = request.FILES['image']
+                answer = Answer(question=question, answer_text=answer_text, answer_by=user, image=image)
                 answer.save()
                 message = "success"
             else:
@@ -187,7 +224,7 @@ def question_page(request, question_id):
         return render(request, 'MockQuora/question_details.html', context)
 
     except Exception as e:
-        print "[Exception]: ", e
+        print "[Exception]: Some error in question_page view", e
         raise Http404
 
 
@@ -204,7 +241,9 @@ def answer_page(request, question_id, answer_id):
         if request.method == 'POST':
             form = CommentForm(request.POST)
             if form.is_valid():
-                pass
+                comment_text = form.cleaned_data['comment_text']
+                comment = Comment(question=question, answer=answer, comment_text=comment_text, comment_by=user)
+                comment.save()
                 message = "success"
             else:
                 message = form.errors
@@ -216,7 +255,7 @@ def answer_page(request, question_id, answer_id):
             'form': form,
             'message': message
         }
-        return render(request, 'MockQuora/answer_details.html', context)
+        return render(request, 'MockQuora/answer.html', context)
 
     except Exception as e:
         print "[Exception]: ", e
@@ -250,4 +289,3 @@ def profile(request, user_id):
     except Exception as e:
         print "[Exception]: ", e
         raise Http404
-
