@@ -214,6 +214,7 @@
                                         <img src='/{{ answer.image.url|slice:"10:" }}'>
                                     {% endif %}
                                     <br>
+                                    <br>
                                     <div class="pad-ver pull-right">
                                         <span><i aria-hidden="true"></i> {{ upvote_count }} upvotes  </span>
 
@@ -254,7 +255,7 @@
 
                         <div class="blog-section">
                             <div class="blog-heading">
-                                <h2>Comments ( {{comments.count}} )</h2>
+                                <h2>Comments ( {{ comments|length }} )</h2>
                                 <hr>
                             </div>
 
@@ -359,6 +360,8 @@
                                             <button>Reply to this Comment</button>
                                         </form>
                                     </div>
+                                    <br>
+                                    <br>
                                     <!-- .children -->
                                 </li>
                                 {% endif %}
@@ -369,6 +372,8 @@
 
                         <div class="clearfix"></div>
 
+                        <br>
+                        <br>
                         <div class="blog-section">
                             <div class="commentform">
                                 <form action="" method="post">

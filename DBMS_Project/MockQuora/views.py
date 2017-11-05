@@ -133,10 +133,10 @@ def feed(request):
         followed_topics = Topic.objects.filter(topic_id__in=followed_topics_ids)
         questions = Question.objects.filter(Q(topic__in=user.interests.all())
                                             | Q(topic__in=followed_topics)).order_by('-timestamp')
-        # questions = questions.filter(~Q(posted_by=user))
+        questions = questions.filter(~Q(posted_by=user))
 
         popular_answers = Answer.objects.annotate(viewer_count=Count('viewers')).order_by('-viewer_count')
-        # popular_answers = popular_answers.filter(~Q(answer_by=user))
+        popular_answers = popular_answers.filter(~Q(answer_by=user))
         popular_users = [ans.answer_by for ans in popular_answers]
 
         popular_questions = Question.objects.annotate(viewer_count=Count('viewers')).order_by('-viewer_count')
@@ -159,8 +159,7 @@ def feed(request):
             answered_questions.append((question, most_popular_answer[0], following_status))
 
     final_popular_users = []
-    # for usr in set(popular_users):
-    for usr in popular_users:
+    for usr in set(popular_users):
         if Follow.objects.filter(follower=user, followed_id=usr.pk, flag=0).count() == 1:
             final_popular_users.append((usr, True))
         else:
