@@ -215,7 +215,9 @@ def follow_profile(request, followed_id):
                                         notification_text=str(user.user.username) + " started following you.",
                                         url=BASE_URL + '/MockQuora/profile/' + str(user.pk))
             notification.save()
+            print "here"
         else:
+            print "here2"
             follows.delete()
 
         return HttpResponseRedirect('/MockQuora/profile/' + str(followed_id))
@@ -323,24 +325,34 @@ def question_page(request, question_id):
             question.viewers.add(user)
 
         if request.method == 'POST':
-            form = AnswerForm(request.POST)
+            print request.POST, request.FILES
+            form = AnswerForm(request.POST, request.FILES)
             if form.is_valid():
                 answer_text = form.cleaned_data['answer_text']
-                image = request.FILES['image']
+                image = request.FILES.get('image', None)
                 answer = Answer(question=question, answer_text=answer_text, answer_by=user, image=image)
                 answer.save()
                 second_user = question.posted_by
-                notification = Notification(user=second_user,
-                                            notification_text=str(user.user.username) + " answered your question.",
-                                            url=BASE_URL + '/MockQuora/question/' + str(question.pk) )
-                notification.save()
+                notif = Notification(user=second_user,
+                                     notification_text=str(user.user.username) + " answered your question.",
+                                     url=BASE_URL + '/MockQuora/question/' + str(question.pk))
+                notif.save()
                 message = "success"
             else:
                 message = form.errors
 
+        final_answers = []
+        for ans in answers:
+            up, down = False, False
+            if Vote.objects.filter(answer=ans, question=ans.question, vote_by=user, vote_type=True):
+                up = True
+            if Vote.objects.filter(answer=ans, question=ans.question, vote_by=user, vote_type=False):
+                down = True
+            final_answers.append((ans, up, down))
+
         context = {
             'question': question,
-            'answers': answers,
+            'answers': final_answers,
             'form': form,
             'message': message,
             'user': user,
@@ -416,7 +428,7 @@ def profile(request, user_id):
         for answer in answers:
             upvotes_count += Vote.objects.filter(answer=answer, comment=-1).count()
 
-        if Follow.objects.filter(follower=user, followed_id=user_id, flag=0).count() == 1:
+        if Follow.objects.filter(follower=profile_user, followed_id=user_id, flag=0).count() == 1:
             follow_flag = True
         else:
             follow_flag = False

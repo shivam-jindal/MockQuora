@@ -61,7 +61,6 @@
           <ul class="top-nav nav-right">
             <li class="dropdown"> 
               <a class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown" data-animations="fadeInUp">
-                <img class="img-circle resize" alt="" src="{{ user.profile_pic }}">
                 <span class="hidden-xs small-padding">
                   <span>Notification</span>
                  <i class="fa fa-caret-down"></i>
@@ -70,10 +69,10 @@
               <ul class="dropdown-menu ">
                 {% for notify in notifications %}
                   {% if forloop.counter0 < 10 %}
-                    <li><a href="{{ notify.url }}"><i class=" icon-bargraph"></i>{{ notify.notification_text }} </a></li>
+                    <li><a href="{{ notify.url }}">{{ notify.notification_text }} </a></li>
                   {% endif %}
                 {% endfor %}
-                <li><a href="/MockQuora/notifications/"><i class=" icon-bargraph"></i>View all Notifications </a></li>
+                <li><a href="/MockQuora/notifications/" style="color:#7777ff"><i class=" icon-bargraph"></i>View all Notifications </a></li>
               </ul>
              </li>
              <li class="dropdown"> 

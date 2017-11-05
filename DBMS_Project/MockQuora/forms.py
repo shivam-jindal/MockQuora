@@ -25,7 +25,7 @@ class RegisterUserForm(forms.ModelForm):
 
 class AnswerForm(forms.Form):
     answer_text = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'cols': 85}))
-    image = forms.ImageField()
+    image = forms.ImageField(required=False)
 
 
 class CommentForm(forms.Form):

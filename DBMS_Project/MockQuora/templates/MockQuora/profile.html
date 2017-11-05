@@ -81,14 +81,14 @@
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown"
                            data-animations="fadeInUp">
-                            <img class="img-circle resize" alt="" src="{{ user.profile_pic }}">
+                            <img class="img-circle resize" alt="" src="{{ profile_user.profile_pic }}">
                             <span class="hidden-xs small-padding">
-                  <span>{{ user.user.username }}</span>
+                  <span>{{ profile_user.user.username }}</span>
                  <i class="fa fa-caret-down"></i>
                 </span>
                         </a>
                         <ul class="dropdown-menu ">
-                            <li><a href="/MockQuora/profile/{{ user.pk }}"><i class=" icon-bargraph"></i> Profile</a>
+                            <li><a href="/MockQuora/profile/{{ profile_user.pk }}"><i class=" icon-bargraph"></i> Profile</a>
                             </li>
                             <li><a href="/MockQuora/logout"><i class="icon-lock"></i> Logout</a></li>
                         </ul>
@@ -336,8 +336,7 @@
                                             <h3><a href="/MockQuora/profile/{{ usr.0.pk }}">
                                                 {{ usr.0.user.first_name }} {{ usr.0.user.last_name }}</a></h3>
                                             <p class="card-text">{{ usr.0.tagline }}</p>
-                                            <p class="card-text"><i class="fa fa-clock-o" aria-hidden="true"></i> {{
-                                                usr.1 }}</p>
+                                            <p class="card-text"><i class="fa fa-clock-o" aria-hidden="true"></i> {{ usr.1 }}</p>
                                         </div>
                                     </div>
                                 </div>

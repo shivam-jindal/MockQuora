@@ -108,7 +108,7 @@
                 <span class="icon-bar"></span>
             </button>
             <!-- logo -->
-            <a href="index.html" class="navbar-brand"><img class="img-responsive" alt=""
+            <a href="/MockQuora/feed" class="navbar-brand"><img class="img-responsive" alt=""
                                                            src="{{STATIC_URL}}MockQuora/images/logo.png">
             </a>
             <!-- header end -->
@@ -118,7 +118,7 @@
             <!-- right bar -->
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <div class="btn-nav"><a href="post_question.html" class="btn btn-primary btn-small navbar-btn">Post
+                    <div class="btn-nav"><a href="/MockQuora/post_question" class="btn btn-primary btn-small navbar-btn">Post
                         Question</a>
                     </div>
                 </li>
@@ -142,14 +142,6 @@
                 </div>
                 <!-- end col -->
                 <div class="col-md-6 col-sm-5 co-xs-12 text-right">
-                    <div class="bread">
-                        <ol class="breadcrumb">
-                            <li><a href="feed.html#">Home</a>
-                            </li>
-                            <li class="active">Question</li>
-                        </ol>
-                    </div>
-                    <!-- end bread -->
                 </div>
                 <!-- end col -->
             </div>
@@ -173,7 +165,7 @@
                     <div class="listing-grid ">
                         <div class="row">
                             <div class="col-md-12 col-sm-12 col-xs-12">
-                                <h3><a href="question-detial.html#"> {{ question.question_text }} </a></h3>
+                                <h3><a href=""> {{ question.question_text }} </a></h3>
                                 <div class="listing-meta"><span><i class="fa fa-clock-o" aria-hidden="true"></i>{{ question.timestamp }}</span>
                                     <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{question.viewers.count}} views</span>
                                 </div>
@@ -200,37 +192,45 @@
 
                             <div class="media-left">
                                 <a data-toggle="tooltip" data-placement="bottom"
-                                   data-original-title="{{ answer.answer_by}}" href="profile/{{asnwer.answer_by.pk}}">
-                                    <img class="img-sm" alt="Profile Picture" src="{{answer.answer_by.profile_pic}}">
+                                   data-original-title="{{ answer.0.answer_by}}" href="/MockQuora/profile/{{asnwer.0.answer_by.pk}}">
+                                    <img class="img-sm" alt="Profile Picture" src="{{answer.0.answer_by.profile_pic}}">
                                 </a>
 
                             </div>
                             <div class="media-body">
                                 <div class="mar-btm">
-                                    <h4><a href="profile/{{answer.answer_by.pk}}"
-                                           class="btn-link text-semibold media-heading box-inline">{{answer.answer_by.user.username}}</a>
+                                    <h4><a href="/MockQuora/profile/{{answer.0.answer_by.pk}}"
+                                           class="btn-link text-semibold media-heading box-inline">{{answer.0.answer_by.user.username}}</a>
                                     </h4>
-                                    <p class="text-muted text-sm"><i class="fa fa-mobile fa-lg"></i>- on {{
-                                        question.timestamp }}</p>
+                                    <p class="text-muted text-sm"> on {{ question.timestamp }}</p>
                                 </div>
-                                <img src="/{{answer.image.url}}">
-                                <p>{{ answer.answer_text|truncatechars:500 }} </p>
+                                <p>{{ answer.0.answer_text|truncatechars:500 }} </p>
                                 <div class="text-center" style="background:#eeeeee">
-                                    <a href="/MockQuora/answer/{{question.pk}}/{{answer.pk}}"
+                                    <a href="/MockQuora/answer/{{question.pk}}/{{answer.0.pk}}"
                                        style="color:#7777aa">read more <span
                                             class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
                                     </a>
                                 </div>
                                 <div class="pad-ver pull-right">
-                                    <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{answer.viewers.count}} views</span>
+                                    <span><i class="fa fa fa-eye" aria-hidden="true"></i> {{answer.0.viewers.count}} views</span>
                                     <a class="btn btn-sm btn-default btn-hover-success" data-toggle="tooltip"
                                        data-placement="bottom" data-original-title="Upvote"
-                                       href="vote_answer/{{answer.answer_id}}/1"><i class="fa fa-thumbs-up"></i></a>
+                                       href="/MockQuora/vote/1/{{ answer.0.pk }}/0/1/">
+                                        {% if answer.1 %}
+                                        <i class="fa fa-thumbs-up" style="color:#0000ff"></i>
+                                        {% else %}
+                                        <i class="fa fa-thumbs-up"></i>
+                                        {% endif %}
+                                    </a>
                                     <a class="btn btn-sm btn-default btn-hover-danger"
-                                       href="vote_answer/{{answer.answer_id}}/0" data-original-title="Downvote"
-                                       data-placement="bottom" data-toggle="tooltip"><i
-                                            class="fa fa-thumbs-down"></i></a>
-
+                                       href="/MockQuora/vote/0/{{ answer.0.pk }}/0/1/" data-original-title="Downvote"
+                                       data-placement="bottom" data-toggle="tooltip">
+                                        {% if answer.2 %}
+                                        <i class="fa fa-thumbs-down" style="color:#0000ff"></i>
+                                        {% else %}
+                                        <i class="fa fa-thumbs-down"></i>
+                                        {% endif %}
+                                    </a>
                                 </div>
 
                             </div>
@@ -243,7 +243,6 @@
                             <div class="form-group">
                                 <label>Post Your Answer</label>
 
-                                <!-- <textarea cols="12" rows="7" class="form-control" placeholder="I Have The Aswert"></textarea> -->
                             </div>
                             <span style="color: Red">{{ message }}</span><br>
                             {% csrf_token %}
@@ -267,7 +266,7 @@
                                 <div class="widget-image-content text-center"><img class="img-thumbnail" alt="avatar"
                                                                                    src="{{question.posted_by.profile_pic}}">
                                     <h2 class="widget-heading text-light">
-                                        <strong>{{question.posted_by.user.username}}</strong></h2>
+                                        <a href="/MockQuora/profile/{{ question.posted_by.pk }}"><strong>{{question.posted_by.user.username}}</strong></a></h2>
                                     <h4 class="widget-heading text-light-op"><em>{{question.posted_by.tagline}}</em>
                                     </h4>
                                 </div>
@@ -317,10 +316,6 @@
     <div class="footer-copyright">
         <div class="auto-container clearfix">
             <!--Copyright-->
-            <div class="copyright text-center">Copyright 2016 &copy; Theme Created By <a target="_blank"
-                                                                                         href="http://themeforest.net/user/scriptsbundle/portfolio">Scriptsbundle</a>
-                All Rights Reserved
-            </div>
         </div>
     </div>
 </footer>
