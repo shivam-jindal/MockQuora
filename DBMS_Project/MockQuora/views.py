@@ -147,7 +147,7 @@ def feed(request):
 
     answered_questions = []
     unanswered_questions = []
-    for question in questions:
+    for question in set(questions):
         if Follow.objects.filter(follower=user, followed_id=question.pk, flag=1).count() == 1:
             following_status = True
         else:
