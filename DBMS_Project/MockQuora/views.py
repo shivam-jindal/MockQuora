@@ -173,6 +173,68 @@ def follow(request, follow_id, followed_id):
 
 
 @login_required
+def follow_profile(request, followed_id):
+    try:
+        user = UserProfile.objects.get(user=request.user)
+        follows, created = Follow.objects.get_or_create(follower=user, followed_id=followed_id, flag=0)
+        if created:
+            follows.save()
+        else:
+            follows.delete()
+        return HttpResponseRedirect('/MockQuora/profile/' + str(followed_id))
+
+    except Exception as e:
+        print "[Exception]: ", e
+        raise Http404
+
+
+@login_required
+def bookmark(request, answer_id):
+    try:
+        user = UserProfile.objects.get(user=request.user)
+        answer = Answer.objects.get(pk=answer_id)
+        question = answer.question
+
+        if user in answer.bookmarks.all():
+            answer.bookmarks.remove(user)
+        else:
+            answer.bookmarks.add(user)
+        return HttpResponseRedirect('/MockQuora/answer/' + str(question.pk) + '/' + str(answer_id))
+
+    except Exception as e:
+        print "[Exception]: ", e
+        raise Http404
+
+
+@login_required
+def votes(request, vote_id, answer_id, comment_id, flag):
+    try:
+        user = UserProfile.objects.get(user=request.user)
+        answer = Answer.objects.get(pk=answer_id)
+        question = answer.question
+        if int(comment_id) == 0:
+            vote, created = Vote.objects.get_or_create(vote_by=user, vote_type=vote_id, answer=answer,
+                                                       question=question)
+        else:
+            comment = Comment.objects.get(pk=comment_id)
+            vote, created = Vote.objects.get_or_create(vote_by=user, vote_type=vote_id, answer=answer,
+                                                       question=question, comment=comment)
+
+        if created:
+            vote.save()
+        else:
+            vote.delete()
+        if int(flag) == 1:
+            return HttpResponseRedirect('/MockQuora/question/' + str(question.pk))
+        else:
+            return HttpResponseRedirect('/MockQuora/answer/' + str(question.pk) + '/' + str(answer_id))
+
+    except Exception as e:
+        print "[Exception]: ", e
+        raise Http404
+
+
+@login_required
 def post_question(request):
     try:
         message = ""
@@ -270,6 +332,7 @@ def answer_page(request, question_id, answer_id):
 def profile(request, user_id):
     try:
         user = UserProfile.objects.get(pk=user_id)
+        profile_user = UserProfile.objects.get(user=request.user)
         bookmarks = user.bookmarks.all()
         follower = Follow.objects.filter(Q(flag=0, followed_id=user.pk))
         followers = [(i.follower, i.timestamp) for i in follower]
@@ -281,8 +344,16 @@ def profile(request, user_id):
         upvotes_count = 0
         for answer in answers:
             upvotes_count += Vote.objects.filter(answer=answer, comment=-1).count()
+
+        if Follow.objects.filter(follower=user, followed_id=user_id, flag=0).count() == 1:
+            follow_flag = True
+        else:
+            follow_flag = False
+
         context = {
             'user': user,
+            'profile_user': profile_user,
+            'follow_flag': follow_flag,
             'bookmarks': bookmarks,
             'follower': followers,
             'following': followings,
@@ -368,6 +439,22 @@ def message(request, user_id):
             for i in m:
                 print i.is_seen
         return render(request, "MockQuora/chat.html", context)
+    except Exception as e:
+        print "[Exception]: ", e
+        raise Http404
+
+
+@login_required
+def notifications(request):
+    try:
+        user = UserProfile.objects.get(user=request.user)
+        notification = Notification.objects.filter(user=user).order_by('-timestamp')
+
+        context = {
+            'user': user,
+            'notifications': notification
+        }
+        return render(request, 'MockQuora/notification.html', context)
     except Exception as e:
         print "[Exception]: ", e
         raise Http404
