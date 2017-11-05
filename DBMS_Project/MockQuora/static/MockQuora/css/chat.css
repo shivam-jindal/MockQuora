@@ -1,0 +1,115 @@
+body{
+    background: #fafafa;
+}
+.float-left{
+    float: left;
+}
+.float-right{
+    float: right;
+}
+
+.chat-container{
+    background: #fff;
+    border-radius: 5px;
+}
+#header {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.sidebar input {
+    background-color: #ccc;
+}
+
+.sidebar, .main-view{
+    padding: 0px;
+    border: 1px solid #fafafa;
+}
+
+#rooms {
+    min-height: 26rem;
+}
+
+#currentPosts {
+    height: 28rem;
+    overflow-y: scroll;
+}
+
+#addPost {
+    margin-top: 2rem;
+}
+
+.main-view{
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+.message-header{
+    height: 3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #fafafa;
+}
+.message-container{
+    flex:1;
+    display: flex;
+    overflow-y: scroll;
+    flex-direction: column;
+}
+.message-wrapper{
+    width: 100%;
+    margin-top: auto;
+}
+.message{
+    display: flex;
+    min-height: 2.4em;
+    margin:0.2em;
+}
+.message-text-container{
+    padding: 0.5em;
+    border-radius: 10px;
+    background-color: #f1f1f1;
+    max-width: 70%;
+}
+.message.message-left{
+    justify-content: flex-start;
+}
+.message-left .message-text-container{
+    border-bottom-left-radius: 0px;
+}
+.message-right .message-text-container{
+    background-color: #5bc0de;
+    color: #fff;
+    border-bottom-right-radius: 0px;   
+}
+.message.message-right{
+    justify-content: flex-end;
+}
+.user-list{
+    list-style-type: none !important;
+    padding: 0px;
+}
+.Aligner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #fafafa;
+}
+.Aligner-item {
+    max-width: 100%;
+}
+
+.rounded-circle {
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.unread_messages {
+    padding-left: 4px;
+    padding-right: 6px;
+    border-radius: 50%;
+    background-color: red;
+    color: white;
+    font-size: 13px;
+}
