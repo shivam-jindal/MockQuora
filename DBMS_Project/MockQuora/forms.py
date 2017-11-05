@@ -24,11 +24,11 @@ class RegisterUserForm(forms.ModelForm):
 
 
 class AnswerForm(forms.Form):
-    answer_text = forms.Textarea()
+    answer_text = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'cols': 85}))
 
 
 class CommentForm(forms.Form):
-    comment_text = forms.Textarea()
+    comment_text = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'cols': 85}))
 
 
 class QuestionForm(forms.ModelForm):
