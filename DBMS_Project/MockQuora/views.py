@@ -66,6 +66,26 @@ def register_user(request):
 
 
 @login_required
+def askto(request, question_id):
+    try:
+        user = UserProfile.objects.get(user=request.user)
+        question = Question.objects.get(pk=question_id)
+        username = request.GET.get('username', None)
+        if username is not None:
+            second_user = UserProfile.objects.get(user__username=username)
+            tag = Tag(question=question, asked_by=user, asked_to=second_user)
+            tag.save()
+            notification = Notification(user=second_user,
+                                        notification_text=str(user.user.username) + " asked you to answer " + str(
+                                            question.question_text), url='/MockQuora/question/' + str(question_id))
+            notification.save()
+        return HttpResponseRedirect('/MockQuora/question' + str(question_id))
+    except Exception as e:
+        print "[Exception]: ", e
+        raise Http404
+
+
+@login_required
 def add_profile_details(request):
     error_msg = ""
     if request.method == "POST":
