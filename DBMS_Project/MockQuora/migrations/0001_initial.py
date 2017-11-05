@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('answer_id', models.AutoField(serialize=False, primary_key=True)),
                 ('answer_text', models.TextField()),
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('image', models.ImageField(upload_to=b'MockQuora/static/MockQuora/images')),
+                ('image', models.ImageField(null=True, upload_to=b'MockQuora/static/MockQuora/images', blank=True)),
             ],
             options={
             },
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('comment_id', models.AutoField(serialize=False, primary_key=True)),
                 ('comment_text', models.TextField()),
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('answer', models.ForeignKey(related_name='comments', to='MockQuora.Answer')),
+                ('answer', models.ForeignKey(related_name=b'comments', to='MockQuora.Answer')),
             ],
             options={
             },
@@ -118,7 +118,7 @@ class Migration(migrations.Migration):
                 ('university', models.CharField(max_length=255)),
                 ('company', models.CharField(max_length=255)),
                 ('profile_pic', models.URLField()),
-                ('interests', models.ManyToManyField(related_name='interested_users', verbose_name=b'list of interests', to='MockQuora.Topic')),
+                ('interests', models.ManyToManyField(related_name=b'interested_users', verbose_name=b'list of interests', to='MockQuora.Topic')),
                 ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -133,7 +133,7 @@ class Migration(migrations.Migration):
                 ('answer', models.ForeignKey(to='MockQuora.Answer')),
                 ('comment', models.ForeignKey(default=-1, to='MockQuora.Comment')),
                 ('question', models.ForeignKey(to='MockQuora.Question')),
-                ('vote_by', models.ForeignKey(related_name='user_votes', to='MockQuora.UserProfile')),
+                ('vote_by', models.ForeignKey(related_name=b'user_votes', to='MockQuora.UserProfile')),
             ],
             options={
             },
@@ -146,19 +146,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tag',
             name='asked_by',
-            field=models.ForeignKey(related_name='asked_tags', to='MockQuora.UserProfile'),
+            field=models.ForeignKey(related_name=b'asked_tags', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='tag',
             name='asked_to',
-            field=models.ForeignKey(related_name='received_tags', to='MockQuora.UserProfile'),
+            field=models.ForeignKey(related_name=b'received_tags', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='tag',
             name='question',
-            field=models.ForeignKey(related_name='tags', to='MockQuora.Question'),
+            field=models.ForeignKey(related_name=b'tags', to='MockQuora.Question'),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -168,25 +168,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='question',
             name='posted_by',
-            field=models.ForeignKey(related_name='user_questions', to='MockQuora.UserProfile'),
+            field=models.ForeignKey(related_name=b'user_questions', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='question',
-            name='topics',
-            field=models.ManyToManyField(related_name='questions_on_topic', null=True, to='MockQuora.Topic', blank=True),
+            name='topic',
+            field=models.ManyToManyField(related_name=b'questions_on_topic', null=True, to='MockQuora.Topic', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='question',
             name='viewers',
-            field=models.ManyToManyField(related_name='viewed_questions', to='MockQuora.UserProfile'),
+            field=models.ManyToManyField(related_name=b'viewed_questions', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='notification',
             name='user',
-            field=models.ForeignKey(related_name='notifications', to='MockQuora.UserProfile'),
+            field=models.ForeignKey(related_name=b'notifications', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -196,13 +196,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='message',
             name='receiver',
-            field=models.ForeignKey(related_name='received_messages', to='MockQuora.UserProfile'),
+            field=models.ForeignKey(related_name=b'received_messages', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='message',
             name='sender',
-            field=models.ForeignKey(related_name='sent_messages', to='MockQuora.UserProfile'),
+            field=models.ForeignKey(related_name=b'sent_messages', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -212,13 +212,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='follow',
             name='follower',
-            field=models.ForeignKey(related_name='user_follows', to='MockQuora.UserProfile'),
+            field=models.ForeignKey(related_name=b'user_follows', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='comment',
             name='comment_by',
-            field=models.ForeignKey(related_name='user_comments', to='MockQuora.UserProfile'),
+            field=models.ForeignKey(related_name=b'user_comments', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -230,7 +230,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='comment',
             name='question',
-            field=models.ForeignKey(related_name='comments', to='MockQuora.Question'),
+            field=models.ForeignKey(related_name=b'comments', to='MockQuora.Question'),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -240,25 +240,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='answer',
             name='answer_by',
-            field=models.ForeignKey(related_name='user_answers', to='MockQuora.UserProfile'),
+            field=models.ForeignKey(related_name=b'user_answers', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='answer',
             name='bookmarks',
-            field=models.ManyToManyField(related_name='bookmarks', to='MockQuora.UserProfile'),
+            field=models.ManyToManyField(related_name=b'bookmarks', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='answer',
             name='question',
-            field=models.ForeignKey(related_name='answers', to='MockQuora.Question'),
+            field=models.ForeignKey(related_name=b'answers', to='MockQuora.Question'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='answer',
             name='viewers',
-            field=models.ManyToManyField(related_name='viewed_answers', to='MockQuora.UserProfile'),
+            field=models.ManyToManyField(related_name=b'viewed_answers', to='MockQuora.UserProfile'),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
