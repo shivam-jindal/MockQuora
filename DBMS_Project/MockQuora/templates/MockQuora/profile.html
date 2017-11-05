@@ -63,12 +63,29 @@
               <a class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown" data-animations="fadeInUp">
                 <img class="img-circle resize" alt="" src="{{ user.profile_pic }}">
                 <span class="hidden-xs small-padding">
-                  <span>{{ user.user.username }}</span>
+                  <span>Notification</span>
                  <i class="fa fa-caret-down"></i>
                 </span>
               </a>
               <ul class="dropdown-menu ">
-                <li><a href="/MockQuora/profile/{{ user.pk }}"><i class=" icon-bargraph"></i> Profile</a></li>
+                {% for notify in notifications %}
+                  {% if forloop.counter0 < 10 %}
+                    <li><a href="{{ notify.url }}"><i class=" icon-bargraph"></i>{{ notify.notification_text }} </a></li>
+                  {% endif %}
+                {% endfor %}
+                <li><a href="/MockQuora/notifications/"><i class=" icon-bargraph"></i>View all Notifications </a></li>
+              </ul>
+             </li>
+            <li class="dropdown"> 
+              <a class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown" data-animations="fadeInUp">
+                <img class="img-circle resize" alt="" src="{{ profile_user.profile_pic }}">
+                <span class="hidden-xs small-padding">
+                  <span>{{ profile_user.user.username }}</span>
+                 <i class="fa fa-caret-down"></i>
+                </span>
+              </a>
+              <ul class="dropdown-menu ">
+                <li><a href="/MockQuora/profile/{{ profile_user.pk }}"><i class=" icon-bargraph"></i> Profile</a></li>
                 <li><a href="/MockQuora/logout"><i class="icon-lock"></i> Logout</a></li>
               </ul>
              </li>
@@ -163,9 +180,15 @@
                     </li>
                   </ul>
                   <ul class="profile-connect">
-                    <li><a title="" href="/MockQuora/follow/0/{{ user.pk }}">Follow</a>
+                  {% if follow_flag %}
+                    <li><a title="" href="/MockQuora/follow_profile/{{ user.pk }}">Following
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                     </li>
-                    <li><a title="" href="/MockQuora/message">Message</a>
+                  {% else %}
+                    <li><a title="" href="/MockQuora/follow_profile/{{ user.pk }}">Follow</a>
+                    </li>
+                  {% endif %}
+                    <li><a title="" href="/MockQuora/chat">Message</a>
                     </li>
                   </ul>
                 </div>
@@ -251,7 +274,10 @@
                                                         class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a>
                                             </div>
                                             <br>
-                                            <div class="pull-right tagcloud"><a>{{ bm.question.topic.name }}</a>
+                                             <div class="pull-right tagcloud">
+                                                {% for tp in bm.question.topic.all %}
+                                                <a>{{ tp.name }}</a>
+                                                {% endfor %}
                                             </div>
                                         </div>
                                     </div>
@@ -346,7 +372,7 @@
     <div class="footer-copyright">
       <div class="auto-container clearfix">
         <!--Copyright-->
-        <div class="copyright text-center">Copyright 2016 &copy; Theme Created By <a target="_blank" href="http://themeforest.net/user/scriptsbundle/portfolio">Scriptsbundle</a> All Rights Reserved</div>
+        <div class="copyright text-center">Copyright 2016 &copy; Theme Created By <a target="_blank" href="http://themeforest.net/user/ScriptsBundledle/portfolio">Scriptsbundle</a> All Rights Reserved</div>
       </div>
     </div>
   </footer>
